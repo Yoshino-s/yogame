@@ -1,0 +1,51 @@
+{
+    "tags": {
+        "allowUnknownTags": false
+    },
+    "source": {
+        "include": [
+            "./src/"
+        ],
+        "includePattern": ".+\\.js(doc)?$",
+        "excludePattern": "(^|\\/|\\\\)_"
+    },
+    "plugins": [
+        "./node_modules/jsdoc/plugins/markdown",
+        "./scripts/jsdoc-fix"
+    ],
+    "templates": {
+        "cleverLinks"   : true,
+        "monospaceLinks": true,
+        "default"       : {
+            "outputSourceFiles" : true
+        },
+        "applicationName": "Yogame",
+        "footer"        : "Made by Yoshino-s",
+        "disqus": "",
+        "openGraph": {
+            "title": "",
+            "type": "website",
+            "image": "",
+            "site_name": "",
+            "url": ""
+        },
+        "meta": {
+            "title": "Yogame API Documentation",
+            "description": "Documentation for Yogame library",
+            "keyword": "docs, documentation, Yogame, html5, javascript, jsdoc"
+        },
+        "linenums"      : true
+    },
+    "markdown"  : {
+        "parser"        : "gfm",
+        "hardwrap"      : false
+    },
+    "opts": {
+        "encoding"      : "utf8",
+        "recurse"       : true,
+        "private"       : false,
+        "lenient"       : true,
+        "destination"   : "./docs",
+        "template"      : "./node_modules/@pixi/jsdoc-template"
+    }
+}

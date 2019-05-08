@@ -1,0 +1,49 @@
+{
+  "name": "yogame",
+  "version": "1.0.0",
+  "description": "A game framework based on pixi.js",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "docs": "jsdoc -c ./scripts/jsdoc.conf.json",
+    "lint": "eslint ./src --fix",
+    "build": "webpack",
+    "watch": "webpack --watch",
+    "start": "webpack-dev-server --open"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Yoshino-s/yogame.git"
+  },
+  "keywords": [
+    "html5",
+    "game",
+    "pixi.js",
+    "pixi",
+    "yogame"
+  ],
+  "author": "Yoshino-s",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Yoshino-s/yogame/issues"
+  },
+  "homepage": "https://github.com/Yoshino-s/yogame#readme",
+  "devDependencies": {
+    "clean-webpack-plugin": "^2.0.1",
+    "eslint": "^5.16.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.16.0",
+    "html-webpack-plugin": "^3.2.0",
+    "jsdoc": "^3.5.5",
+    "webpack": "^4.29.6",
+    "webpack-cli": "^3.3.0",
+    "webpack-dev-server": "^3.3.0"
+  },
+  "dependencies": {
+    "@pixi/jsdoc-template": "^2.4.2",
+    "eruda": "^1.5.4",
+    "loglevel": "^1.6.1",
+    "pixi.js": "^4.8.7",
+    "resource-loader": "^2.2.4"
+  }
+}
