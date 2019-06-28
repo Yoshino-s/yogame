@@ -20,7 +20,7 @@
             "outputSourceFiles" : true
         },
         "applicationName": "Yogame",
-        "footer"        : "Made by Yoshino-s",
+        "footer" : "Made by Yoshino-s",
         "disqus": "",
         "openGraph": {
             "title": "",
@@ -46,6 +46,6 @@
         "private"       : false,
         "lenient"       : true,
         "destination"   : "./docs",
-        "template"      : "./node_modules/@pixi/jsdoc-template"
+	"template"	: "./node_modules/@pixi/jsdoc-template"
     }
 }

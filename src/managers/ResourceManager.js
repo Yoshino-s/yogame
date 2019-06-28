@@ -1,10 +1,8 @@
-import {loaders} from "pixi.js";
+import {Loader} from "pixi.js";
 import Manager from "./Manager";
-import TaskManager from "./TaskManager";
 
 /**
  * The manager of all types of resources, including image, audio, data.
- * @class
  * @extends Yogame.managers.Manager
  * @memberof Yogame.managers
  */
@@ -12,38 +10,29 @@ class ResourceManager extends Manager{
   constructor() {
     super();
     /**
-     * The loader using PIXI.loaders.shared.
-     * @type {PIXI.loaders.Loader}
+     * The loader using PIXI.Loader.shared.
+     * @type {PIXI.Loader}
      */
-    this.loader = loaders.shared;
+    this.loader = Loader.shared;
     /**
      * The resources binded to loader.
-     * @type {PIXI.loaders.Resource[]}
+     * @type {PIXI.LoaderResource[]}
      */
     this.resources = this.loader.resources;
     /**
      * The data indicating the url of resources.
-     * @type {DataOption[]}
+     * @type {DataOption}
      */
     this.data = [];
     this.needLoad = false;
-    this.loadTask = new TaskManager.Task(
-      this.load, false, {
-        timeout: 100
-      });
-    TaskManager.add(this.loadTask);
   }
-  /**
-   * The data of resources.
-   * @typedef {Object} DataOption
-   * @property {string} key - The name of the resource to load, if not passed the url is used.
-   * @property {string} url - The url for this resource, relative to the baseUrl of this loader.
-   * @property {boolean} autoLoad - Whether it should be loaded automatically.
-   */
   /**
    * Load data and load those need to be loaded automatically.
    * @async
-   * @param {DataOption[]} dat - Data of resource.
+   * @param {Object} dat - Data of resource.
+   * @param {string} dat.key - The name of the resource to load, if not passed the url is used.
+   * @param {string} dat.url - The url for this resource, relative to the baseUrl of this loader.
+   * @param {boolean} dat.autoLoad - Whether it should be loaded automatically.
    */
   async loadData (dat) {
     this.data = dat.
@@ -53,10 +42,10 @@ class ResourceManager extends Manager{
     await this.loader.load();
   }
   /**
-   * Get resource from cache.If not exist,load by PIXI.loaders.shared.
+   * Get resource from cache.If not exist,load by PIXI.Loader.shared.
    * @async
    * @param {string} name - name of resource.
-   * @return {PIXI.loaders.Resource} The resource.
+   * @return {PIXI.LoaderResource} The resource.
    */
   async get (name) {
     let i = this.resources[name];
@@ -76,32 +65,34 @@ class ResourceManager extends Manager{
       }
     } 
   }
+  
   /**
-   * Inform loader to load the resources if not exist.
-   * @param {string} name - name of resource.
-   * @return {number} The status number.0 meams not found.1 means has been got.2 means will be got.
+   * Load resource.
+   * @async
+   * @return {PIXI.LoaderResource} The resource.
    */
-  preGet (name) {
-    let i = this.resources[name];
-    if(i) return 1;
-    else{
-      i=this.data.find(d=>d.name===name);
-      if(i) {
-        let dat = i;
-        this.loader.add(dat);
-        return 2;
-      }else {
-        return 0;
-      }
-    } 
-  }
-
   async load() {
     if(!this.needLoad) return;
     await new Promise((resolve)=>{
       this.loader.load((res)=>{resolve(res);});
     });
     this.needLoad = false;
+    return this.resources
+  }
+  
+  /**
+   * The shared ResourceManager.
+   * @static
+   * @name shared
+   * @type {Yogame.managers.ResourceManager}
+   * @memberof Yogame.managers.ResourceManager
+   */
+  static get shared() {
+    if(!ResourceManager._shared) {
+      ResourceManager._shared = new ResourceManager();
+      ResourceManager._shared.isShared = true;
+    }
+    return ResourceManager._shared;
   }
 }
 

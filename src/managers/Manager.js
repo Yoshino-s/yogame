@@ -2,7 +2,7 @@ import { EventEmitter } from 'events';
 
 /**
  * The Manager interface.
- * @interface
+ * @interface Manager
  * @extends events.EventEmitter
  * @memberof Yogame.managers
  */

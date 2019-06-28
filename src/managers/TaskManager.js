@@ -1,4 +1,3 @@
-import * as log from "loglevel";
 import Manager from "./Manager";
 
 function timeoutPromise(timeout, msg) {
@@ -8,40 +7,7 @@ function timeoutPromise(timeout, msg) {
 }
 
 /**
- * The task with priority setting.
- * @class
- * @memberof Yogame.managers.TaskManager
- */
-class Task {
-  /**
-   * The options of task.
-   * @typedef {Object} TaskOption
-   * @property {number} priority
-   * @property {object} context
-   * @property {number} timeout
-   */
-  /**
-   * Create a task using by TaskManager.
-   * @param {function} fn - The function called in the task.
-   * @param {boolean} once - Whether the task only need to do once.
-   * @param {TaskOption} options - Data of resource.
-   */
-  constructor(fn, once=false, options={}) {
-    if(fn instanceof Function) {
-      this.fn = async ()=>fn();
-    }else{
-      this.fn = fn;
-    }
-    this.once = !!once;
-    this.context = options.context;
-    this.priority = options.priority || 0;
-    this.timeout = options.timeout || 100;
-  }
-}
-
-/**
  * The manager of all tasks.Use requestAnimationFrame to loop.
- * @class
  * @extends Yogame.managers.Manager
  * @memberof Yogame.managers
  */
@@ -153,10 +119,17 @@ class TaskManager extends Manager {
    * @async
    */
   async update() {
+    let samePri = [];
+    let pri = null;
     for(let task of this.queue) {
       if(task.once) this.queue.remove(task.id);
-      await Promise.race([task.fn.apply(task.context), timeoutPromise(task.timeout, `TIMEOUT in task[id=${task.id}].`)])
-        .catch(log.error);
+      if(pri===task.priority){
+        samePri.push(task.exec());
+      } else {
+        if(samePri) {await Promise.all(samePri);}
+        pri=task.priority;
+        samePri=[task.exec()];
+      }
     }
     this.rqfId = requestAnimationFrame(this.update.bind(this));
   }
@@ -178,8 +151,37 @@ class TaskManager extends Manager {
     return true;
   }
 }
+/**
+ * The task with priority setting.
+ * @memberof Yogame.managers.TaskManager
+ * @param {function} fn - The function called in the task.
+ * @param {boolean} once - Whether the task only need to do once.
+ * @param {object} options - Data of resource.
+ * @param {number} options.priority
+ * @param {object} options.context
+ * @param {number} options.timeout
+ */
+class Task {
+  constructor(fn, once=false, options={}) {
+    if(fn instanceof Function) {
+      this.fn = async ()=>fn();
+    }else{
+      this.fn = fn;
+    }
+    this.once = !!once;
+    this.context = options.context;
+    this.priority = options.priority || 0;
+    this.timeout = options.timeout;
+    this.id=null;
+  }
+  /**
+   * Execute the task.
+   */
+  exec() {
+    return this.timeout?Promise.race([this.fn.apply(this.context),timeoutPromise(this.timeout, `Timeout in task[id=${this.id}]`)]):this.fn.apply(this.context);
+  }
+}
+
 TaskManager.Task = Task;
-
-
 
 export default TaskManager;

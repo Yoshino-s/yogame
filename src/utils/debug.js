@@ -25,7 +25,15 @@ window.log = log;
 
 const messages = [];
 
-const addMessage = (m) => {messages.push(m);setTimeout(()=>messages.shift(), 1000);document.getElementById("log").innerHTML=messages.join('</br>')}
+const l=document.getElementById("log");
+
+const addMessage = (m) => {
+  messages.push(m);setTimeout(()=>{
+    messages.shift();
+    l.innerHTML=messages.join('</br>');
+  }, 1000);
+  l.innerHTML=messages.join('</br>');
+};
 
 export default {
   eruda,

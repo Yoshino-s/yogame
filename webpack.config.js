@@ -9,6 +9,24 @@ module.exports = {
   devServer: {
     contentBase: './dist'
   },
+  module: {
+    rules: [
+      {
+        enforce: "pre",
+        test: /\.js$/,
+        exclude: /node_modules/,
+        loader: "eslint-loader",
+	    options: {fix:true}
+      },
+      {
+        test: /\.(png|jpg|gif|svg)$/,
+        loader: "file-loader",
+        options: {
+          name: 'assets/[name].[ext]'
+        }
+      }
+    ]
+  },
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'main.bundle.js'

@@ -5,3 +5,4 @@
 export { default as Manager } from './Manager';
 export { default as TaskManager } from './TaskManager';
 export { default as ResourceManager } from './ResourceManager';
+export { default as InteractionManager } from './InteractionManager';
