@@ -2,6 +2,7 @@ const path = require('path');
 const webpack = require('webpack');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = {
   mode: 'development',
@@ -16,7 +17,7 @@ module.exports = {
         test: /\.js$/,
         exclude: /node_modules/,
         loader: "eslint-loader",
-	    options: {fix:true}
+        options: { fix: true }
       },
       {
         test: /\.(png|jpg|gif|svg)$/,
@@ -40,7 +41,12 @@ module.exports = {
           chunks: "all"
         }
       }
-    }
+    },
+    minimizer: [
+      new TerserPlugin({
+        parallel: 4,
+      })
+    ]
   },
   plugins: [
     new CleanWebpackPlugin(),

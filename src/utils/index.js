@@ -2,8 +2,12 @@
  * This namespace contains Utilities & tool functions.
  * @namespace Yogame.utils
  */
-export { default as debug } from "./debug";
+
+import Store from "./Store";
+// eslint-disable-next-line import/no-named-as-default, import/no-named-as-default-member
+import AJSON from "./AJSON";
+import debug from "./debug";
 
 const noop = ()=>{};
 
-export {noop};
+export {noop, debug, AJSON, Store};

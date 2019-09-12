@@ -77,7 +77,7 @@ class ResourceManager extends Manager{
       this.loader.load((res)=>{resolve(res);});
     });
     this.needLoad = false;
-    return this.resources
+    return this.resources;
   }
   
   /**
