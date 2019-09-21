@@ -6,27 +6,21 @@ const TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = {
   mode: 'development',
-  entry: './app.js',
+  entry: './app.ts',
   devServer: {
     contentBase: './dist'
   },
   module: {
     rules: [
       {
-        enforce: "pre",
-        test: /\.js$/,
-        exclude: /node_modules/,
-        loader: "eslint-loader",
-        options: { fix: true }
-      },
-      {
-        test: /\.(png|jpg|gif|svg)$/,
-        loader: "file-loader",
-        options: {
-          name: 'assets/[name].[ext]'
-        }
+        test: /\.tsx?$/,
+        loader: "ts-loader",
+        exclude: /node_modules/
       }
     ]
+  },
+  resolve: {
+    extensions: ['.tsx','.ts','.js']
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
