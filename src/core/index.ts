@@ -1,7 +1,5 @@
-import Application from './Application';
-import Stage from './Stage';
+import Application from "./Application";
 
 export {
   Application,
-  Stage
 };

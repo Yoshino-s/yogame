@@ -1,6 +1,6 @@
-import * as util from './util';
-import Dictionary from './Dictionary';
-import * as arrays from './arrays';
+import * as util from "./util";
+import Dictionary from "./Dictionary";
+import * as arrays from "./arrays";
 
 export default class MultiDictionary<K, V> {
 
@@ -83,7 +83,7 @@ export default class MultiDictionary<K, V> {
     }
     const array = this.dict.getValue(key);
     if (util.isUndefined(array)) {
-      this.dict.setValue(key, [value]);
+      this.dict.setValue(key, [ value, ]);
       return true;
     }
     if (!this.allowDuplicate) {

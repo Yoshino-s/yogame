@@ -1,8 +1,8 @@
-import * as util from './util';
+import * as util from "./util";
 
-import * as arrays from './arrays';
+import * as arrays from "./arrays";
 
-import Dictionary from './Dictionary';
+import Dictionary from "./Dictionary";
 
 export default class Set<T> {
 
@@ -34,7 +34,6 @@ export default class Set<T> {
     constructor(toStringFunction?: (item: T) => string) {
       this.dictionary = new Dictionary<T, any>(toStringFunction);
     }
-
 
 
     /**

@@ -1,5 +1,5 @@
-import * as util from './util';
-import Queue from './Queue';
+import * as util from "./util";
+import Queue from "./Queue";
 // Internal interface for BST
 interface BSTreeNode<T> {
     element: T;
@@ -153,7 +153,7 @@ export default class BSTreeKV<K, V extends K> {
      */
     inorderTraversal(callback: util.ILoopFunction<V>): void {
       this.inorderTraversalAux(this.root, callback, {
-        stop: false
+        stop: false,
       });
     }
 
@@ -164,7 +164,7 @@ export default class BSTreeKV<K, V extends K> {
      */
     preorderTraversal(callback: util.ILoopFunction<V>): void {
       this.preorderTraversalAux(this.root, callback, {
-        stop: false
+        stop: false,
       });
     }
 
@@ -175,7 +175,7 @@ export default class BSTreeKV<K, V extends K> {
      */
     postorderTraversal(callback: util.ILoopFunction<V>): void {
       this.postorderTraversalAux(this.root, callback, {
-        stop: false
+        stop: false,
       });
     }
 
@@ -443,7 +443,7 @@ export default class BSTreeKV<K, V extends K> {
         element: element,
         leftCh: null,
         rightCh: null,
-        parent: null
+        parent: null,
       };
     }
 

@@ -1,4 +1,4 @@
-import BSTreeKV from './BSTreeKV';
+import BSTreeKV from "./BSTreeKV";
 
 /**
  * Special-case of the binary search tree in which the search key is equal to the element type.

@@ -25,11 +25,11 @@ const LEVEL: {[key: string]: number} = {
   DEBUG: 3,
   LOG: 3,
   WARN: 4,
-  ERROR: 5
+  ERROR: 5,
 };
 
 function log(...args: any[]): void {
-  if(log.level>LEVEL.DEBUG) return;
+  if(log.level > LEVEL.DEBUG) return;
   console.log(...args);
 }
 
@@ -38,23 +38,23 @@ log.LEVEL = LEVEL;
 
 log.log = log;
 log.trace = (...args: any[]): void => {
-  if(log.level>LEVEL.TRACE) return;
+  if(log.level > LEVEL.TRACE) return;
   console.trace(...args);
 };
 log.info = (...args: any[]): void => {
-  if(log.level>LEVEL.INFO) return;
+  if(log.level > LEVEL.INFO) return;
   console.info(...args);
 };
 log.debug = (...args: any[]): void => {
-  if(log.level>LEVEL.DEBUG) return;
+  if(log.level > LEVEL.DEBUG) return;
   console.debug(...args);
 };
 log.warn = (...args: any[]): void => {
-  if(log.level>LEVEL.WARN) return;
+  if(log.level > LEVEL.WARN) return;
   console.warn(...args);
 };
 log.error = (...args: any[]): void => {
-  if(log.level>LEVEL.ERROR) return;
+  if(log.level > LEVEL.ERROR) return;
   console.error(...args);
 };
 
@@ -74,7 +74,7 @@ class Logger {
       this.field = field;
     }
     this._console = redirect;
-    (["trace", "info", "log", "debug", "warn", "error"] as ConsoleKey[]).forEach((key): void => {
+    ([ "trace", "info", "log", "debug", "warn", "error", ] as ConsoleKey[]).forEach((key): void => {
       this[key] = (...args: any[]): void => this._console[key](`[${this.field}] [${key.toUpperCase()}]`, ...args);
     });
   }

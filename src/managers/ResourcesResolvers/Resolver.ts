@@ -1,4 +1,4 @@
-import { Logger } from "../../utils/index";
+import { Logger, } from "../../utils/index";
 
 export interface ResolverOption {
   basePath: string;
@@ -17,11 +17,11 @@ export enum ResourceType {
 
 export abstract class Resolver{
   option: ResolverOption;
-  constructor(option: ResolverOption){
-    this.option = option;
+  constructor(option?: ResolverOption){
+    this.option = option || { basePath: "/", noCache: false, };
   }
   abstract shouldUse(url: string, type?: ResourceType): boolean;
-  abstract async load(url: string, id?: string, option?: ResolverOption): Promise<ResolvedResource>;
+  abstract async load(url: string, id: string, option?: ResolverOption): Promise<ResolvedResource>;
 }
 
 export const logger = new Logger("ResourceResolver");

@@ -27,15 +27,15 @@ export default class MultiRootTree {
     }
 
     initRootIds(): void {
-      for (let rootId of this.rootIds) {
+      for (const rootId of this.rootIds) {
         this.createEmptyNodeIfNotExist(rootId);
       }
     }
 
     initNodes(): void {
-      for (let nodeKey in this.nodes) {
+      for (const nodeKey in this.nodes) {
         if (this.nodes.hasOwnProperty(nodeKey)) {
-          for (let nodeListItem of this.nodes[nodeKey]) {
+          for (const nodeListItem of this.nodes[nodeKey]) {
             this.createEmptyNodeIfNotExist(nodeListItem);
           }
         }
@@ -50,13 +50,13 @@ export default class MultiRootTree {
 
 
     getRootIds(): string[]{
-      let clone = this.rootIds.slice();
+      const clone = this.rootIds.slice();
       return clone;
     }
 
     getNodes(): {[id: string]: string[]} {
-      let clone: { [id: string]: Array<string> } = {};
-      for (let nodeKey in this.nodes) {
+      const clone: { [id: string]: Array<string> } = {};
+      for (const nodeKey in this.nodes) {
         if (this.nodes.hasOwnProperty(nodeKey)) {
           clone[nodeKey] = this.nodes[nodeKey].slice();
         }
@@ -95,16 +95,16 @@ export default class MultiRootTree {
     
         level++;
     
-        let idsList = nodes[startId];
+        const idsList = nodes[startId];
         for (let i = 0; i < idsList.length; i++) {
-          let id = idsList[i];
-          returnArray.push({ id, level, hasParent: true });
+          const id = idsList[i];
+          returnArray.push({ id, level, hasParent: true, });
           traverse(id, nodes, returnArray, level);
         }
     
         level--;
       }
-      let extraPropsObject: Array<FlatTreeNode> = [];
+      const extraPropsObject: Array<FlatTreeNode> = [];
 
       for (let i = 0; i < this.rootIds.length; i++) {
         const rootId = this.rootIds[i];
@@ -118,7 +118,7 @@ export default class MultiRootTree {
         traverse(rootId, this.nodes, extraPropsObject, 0);
       }
 
-      for (let o of extraPropsObject) {
+      for (const o of extraPropsObject) {
         o.childrenCount = countChildren(o.id);
       }
 
@@ -142,13 +142,13 @@ export default class MultiRootTree {
     }
 
     swapRootIdWithRootId(rootId: string, withRootId: string): void {
-      let leftIndex = this.findRootId(rootId);
-      let rightIndex = this.findRootId(withRootId);
+      const leftIndex = this.findRootId(rootId);
+      const rightIndex = this.findRootId(withRootId);
       this.swapRootPositionWithRootPosition(leftIndex, rightIndex);
     }
 
     swapRootPositionWithRootPosition(swapRootPosition: number, withRootPosition: number): void {
-      let temp = this.rootIds[withRootPosition];
+      const temp = this.rootIds[withRootPosition];
       this.rootIds[withRootPosition] = this.rootIds[swapRootPosition];
       this.rootIds[swapRootPosition] = temp;
     }
@@ -161,14 +161,14 @@ export default class MultiRootTree {
     }
 
     insertIdBeforeId(beforeId: string, insertId: string): void {
-      let foundRootIdIndex = this.findRootId(beforeId);
+      const foundRootIdIndex = this.findRootId(beforeId);
       if (foundRootIdIndex > -1) {
         this.insertIdIntoRoot(insertId, foundRootIdIndex);
       }
 
-      for (let nodeKey in this.nodes) {
+      for (const nodeKey in this.nodes) {
         if (this.nodes.hasOwnProperty(nodeKey)) {
-          let foundNodeIdIndex = this.findNodeId(nodeKey, beforeId);
+          const foundNodeIdIndex = this.findNodeId(nodeKey, beforeId);
           if (foundNodeIdIndex > -1) {
             this.insertIdIntoNode(nodeKey, insertId, foundNodeIdIndex);
           }
@@ -177,14 +177,14 @@ export default class MultiRootTree {
     }
 
     insertIdAfterId(belowId: string, insertId: string): void {
-      let foundRootIdIndex = this.findRootId(belowId);
+      const foundRootIdIndex = this.findRootId(belowId);
       if (foundRootIdIndex > -1) {
         this.insertIdIntoRoot(insertId, foundRootIdIndex + 1);
       }
 
-      for (let nodeKey in this.nodes) {
+      for (const nodeKey in this.nodes) {
         if (this.nodes.hasOwnProperty(nodeKey)) {
-          let foundNodeIdIndex = this.findNodeId(nodeKey, belowId);
+          const foundNodeIdIndex = this.findNodeId(nodeKey, belowId);
           if (foundNodeIdIndex > -1) {
             this.insertIdIntoNode(nodeKey, insertId, foundNodeIdIndex + 1);
           }
@@ -229,11 +229,11 @@ export default class MultiRootTree {
 
     private moveId(moveId: string, beforeId: string, direction: Direction): void {
 
-      let sourceId = moveId;
+      const sourceId = moveId;
       const sourceRootIndex = this.findRootId(sourceId);
 
 
-      for (let nodeKey in this.nodes) {
+      for (const nodeKey in this.nodes) {
         if (this.nodes.hasOwnProperty(nodeKey)) {
           break;
         }
@@ -241,10 +241,10 @@ export default class MultiRootTree {
 
       // got all
 
-      let targetId = beforeId;
+      const targetId = beforeId;
       let targetRootIndex = this.findRootId(targetId);
 
-      for (let nodeKey in this.nodes) {
+      for (const nodeKey in this.nodes) {
         if (this.nodes.hasOwnProperty(nodeKey)) {
           break;
         }
@@ -268,18 +268,18 @@ export default class MultiRootTree {
           }
 
           switch (direction) {
-          case Direction.BEFORE:
-            this.insertIdIntoRoot(sourceId, targetRootIndex);
-            break;
-          case Direction.AFTER:
-            this.insertIdIntoRoot(sourceId, targetRootIndex + 1);
-            break;
-          case Direction.INSIDE_AT_START:
-            this.nodeInsertAtStart(targetId, sourceId);
-            break;
-          case Direction.INSIDE_AT_END:
-            this.nodeInsertAtEnd(targetId, sourceId);
-            break;
+            case Direction.BEFORE:
+              this.insertIdIntoRoot(sourceId, targetRootIndex);
+              break;
+            case Direction.AFTER:
+              this.insertIdIntoRoot(sourceId, targetRootIndex + 1);
+              break;
+            case Direction.INSIDE_AT_START:
+              this.nodeInsertAtStart(targetId, sourceId);
+              break;
+            case Direction.INSIDE_AT_END:
+              this.nodeInsertAtEnd(targetId, sourceId);
+              break;
           }
         } else {
           // moving root (source) ABOVE node (target)
@@ -287,23 +287,23 @@ export default class MultiRootTree {
           // will remove one entry from roots
           this.rootDelete(sourceRootIndex);
 
-          for (let nodeKey in this.nodes) {
+          for (const nodeKey in this.nodes) {
             if (this.nodes.hasOwnProperty(nodeKey)) {
-              let index = this.findNodeId(nodeKey, targetId);
+              const index = this.findNodeId(nodeKey, targetId);
               if (index > -1) {
                 switch (direction) {
-                case Direction.BEFORE:
-                  this.insertIdIntoNode(nodeKey, sourceId, index);
-                  break;
-                case Direction.AFTER:
-                  this.insertIdIntoNode(nodeKey, sourceId, index + 1);
-                  break;
-                case Direction.INSIDE_AT_START:
-                  this.nodeInsertAtStart(targetId, sourceId);
-                  break;
-                case Direction.INSIDE_AT_END:
-                  this.nodeInsertAtEnd(targetId, sourceId);
-                  break;
+                  case Direction.BEFORE:
+                    this.insertIdIntoNode(nodeKey, sourceId, index);
+                    break;
+                  case Direction.AFTER:
+                    this.insertIdIntoNode(nodeKey, sourceId, index + 1);
+                    break;
+                  case Direction.INSIDE_AT_START:
+                    this.nodeInsertAtStart(targetId, sourceId);
+                    break;
+                  case Direction.INSIDE_AT_END:
+                    this.nodeInsertAtEnd(targetId, sourceId);
+                    break;
                 }
                 break;
               }
@@ -315,9 +315,9 @@ export default class MultiRootTree {
           // moving node (source) ABOVE root (target)
 
           // delete source id from each node
-          for (let nodeKey in this.nodes) {
+          for (const nodeKey in this.nodes) {
             if (this.nodes.hasOwnProperty(nodeKey)) {
-              let index = this.findNodeId(nodeKey, sourceId);
+              const index = this.findNodeId(nodeKey, sourceId);
               if (index > -1) {
                 // this.nodeInsertId(nodeKey, sourceId, index);
                 this.nodeDeleteAtIndex(nodeKey, index);
@@ -327,27 +327,27 @@ export default class MultiRootTree {
           }
 
           switch (direction) {
-          case Direction.BEFORE:
-            this.insertIdIntoRoot(sourceId, targetRootIndex);
-            break;
-          case Direction.AFTER:
-            this.insertIdIntoRoot(sourceId, targetRootIndex + 1);
-            break;
-          case Direction.INSIDE_AT_START:
-            this.nodeInsertAtStart(targetId, sourceId);
-            break;
-          case Direction.INSIDE_AT_END:
-            this.nodeInsertAtEnd(targetId, sourceId);
-            break;
+            case Direction.BEFORE:
+              this.insertIdIntoRoot(sourceId, targetRootIndex);
+              break;
+            case Direction.AFTER:
+              this.insertIdIntoRoot(sourceId, targetRootIndex + 1);
+              break;
+            case Direction.INSIDE_AT_START:
+              this.nodeInsertAtStart(targetId, sourceId);
+              break;
+            case Direction.INSIDE_AT_END:
+              this.nodeInsertAtEnd(targetId, sourceId);
+              break;
           }
 
         } else {
           // moving node (source) ABOVE node (target)
 
           // delete source id from each node
-          for (let nodeKey in this.nodes) {
+          for (const nodeKey in this.nodes) {
             if (this.nodes.hasOwnProperty(nodeKey)) {
-              let index = this.findNodeId(nodeKey, sourceId);
+              const index = this.findNodeId(nodeKey, sourceId);
               if (index > -1) {
                 this.nodeDeleteAtIndex(nodeKey, index);
                 break;
@@ -355,23 +355,23 @@ export default class MultiRootTree {
             }
           }
 
-          for (let nodeKey in this.nodes) {
+          for (const nodeKey in this.nodes) {
             if (this.nodes.hasOwnProperty(nodeKey)) {
-              let index = this.findNodeId(nodeKey, targetId);
+              const index = this.findNodeId(nodeKey, targetId);
               if (index > -1) {
                 switch (direction) {
-                case Direction.BEFORE:
-                  this.insertIdIntoNode(nodeKey, sourceId, index);
-                  break;
-                case Direction.AFTER:
-                  this.insertIdIntoNode(nodeKey, sourceId, index + 1);
-                  break;
-                case Direction.INSIDE_AT_START:
-                  this.nodeInsertAtStart(targetId, sourceId);
-                  break;
-                case Direction.INSIDE_AT_END:
-                  this.nodeInsertAtEnd(targetId, sourceId);
-                  break;
+                  case Direction.BEFORE:
+                    this.insertIdIntoNode(nodeKey, sourceId, index);
+                    break;
+                  case Direction.AFTER:
+                    this.insertIdIntoNode(nodeKey, sourceId, index + 1);
+                    break;
+                  case Direction.INSIDE_AT_START:
+                    this.nodeInsertAtStart(targetId, sourceId);
+                    break;
+                  case Direction.INSIDE_AT_END:
+                    this.nodeInsertAtEnd(targetId, sourceId);
+                    break;
                 }
                 break;
               }
@@ -384,16 +384,16 @@ export default class MultiRootTree {
 
 
     private rootDeleteId(id: string): void {
-      let index = this.findRootId(id);
+      const index = this.findRootId(id);
       if (index > -1) {
         this.rootDelete(index);
       }
     }
 
     private nodeAndSubNodesDelete(nodeKey: string): void {
-      let toDeleteLater: Array<string> = [];
+      const toDeleteLater: Array<string> = [];
       for (let i = 0; i < this.nodes[nodeKey].length; i++) {
-        let id = this.nodes[nodeKey][i];
+        const id = this.nodes[nodeKey][i];
         this.nodeAndSubNodesDelete(id);
         toDeleteLater.push(nodeKey);
       }
@@ -405,10 +405,10 @@ export default class MultiRootTree {
     }
 
     private nodeRefrencesDelete(id: string): void {
-      for (let nodeKey in this.nodes) {
+      for (const nodeKey in this.nodes) {
         if (this.nodes.hasOwnProperty(nodeKey)) {
           for (let i = 0; i < this.nodes[nodeKey].length; i++) {
-            let targetId = this.nodes[nodeKey][i];
+            const targetId = this.nodes[nodeKey][i];
             if (targetId === id) {
               this.nodeDeleteAtIndex(nodeKey, i);
             }
@@ -429,7 +429,6 @@ export default class MultiRootTree {
     private findNodeId(nodeKey: string, id: string): number {
       return this.nodes[nodeKey].indexOf(id);
     }
-
 
 
     private nodeInsertAtStart(nodeKey: string, id: string): void {

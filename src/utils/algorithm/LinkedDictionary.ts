@@ -1,6 +1,6 @@
-import Dictionary, { DictionaryPair} from './Dictionary';
+import Dictionary, { DictionaryPair, } from "./Dictionary";
 
-import * as util from './util';
+import * as util from "./util";
 
 /**
  * This class is used by the LinkedDictionary Internally
@@ -71,7 +71,7 @@ export default class LinkedDictionary<K, V> extends Dictionary<K, V> {
       if (util.isUndefined(key)) {
         return undefined;
       }
-      const k = '$' + this.toStr(key);
+      const k = `$${ this.toStr(key)}`;
       const pair = this.table[k] as LinkedDictionaryPair<K, V>;
       return pair;
     }
@@ -126,7 +126,7 @@ export default class LinkedDictionary<K, V> extends Dictionary<K, V> {
      * its place in the linked ordering.
      */
     private replace(oldPair: LinkedDictionaryPair<K, V>, newPair: LinkedDictionaryPair<K, V>): void {
-      const k = '$' + this.toStr(newPair.key);
+      const k = `$${ this.toStr(newPair.key)}`;
 
       // set the new Pair's links to existingPair's links
       newPair.next = oldPair.next;
@@ -170,7 +170,7 @@ export default class LinkedDictionary<K, V> extends Dictionary<K, V> {
       const existingPair = this.getLinkedDictionaryPair(key);
       const newPair = new LinkedDictionaryPair<K, V>(key, value);
 
-      const k = '$' + this.toStr(key);
+      const k = `$${ this.toStr(key)}`;
 
       // If there is already an element for that key, we
       // keep it's place in the LinkedList

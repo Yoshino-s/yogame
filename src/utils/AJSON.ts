@@ -2,10 +2,10 @@ function stringify(raw: any): string {
   return JSON.stringify(raw, function(key: string, val: any) {
     let o: any = val;
     if(val instanceof Set) {
-      o = ["__Set", ...Array.from(val)];
+      o = [ "__Set", ...Array.from(val), ];
     }
     if(val instanceof Map) {
-      o = ["__Map", ...Array.from(val.entries())];
+      o = [ "__Map", ...Array.from(val.entries()), ];
     }
     return o;
   });
@@ -15,14 +15,14 @@ function parse(raw: string): any {
     let o = val;
     if(Array.isArray) {
       switch(val[0]) {
-      case "__Set":
-        o.shift();
-        o=new Set(o);
-        break;
-      case "__Map":
-        o.shift();
-        o = new Map(o);
-        break;
+        case "__Set":
+          o.shift();
+          o = new Set(o);
+          break;
+        case "__Map":
+          o.shift();
+          o = new Map(o);
+          break;
       }
     }
     return o;
@@ -31,5 +31,5 @@ function parse(raw: string): any {
 
 export default {
   parse,
-  stringify
+  stringify,
 };

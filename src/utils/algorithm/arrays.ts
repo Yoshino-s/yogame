@@ -1,4 +1,4 @@
-import * as util from './util';
+import * as util from "./util";
 
 /**
  * Returns the position of the first occurrence of the specified item
@@ -147,7 +147,7 @@ export function swap<T>(array: T[], i: number, j: number): boolean {
 }
 
 export function toString<T>(array: T[]): string {
-  return '[' + array.toString() + ']';
+  return `[${ array.toString() }]`;
 }
 
 /**

@@ -1,6 +1,6 @@
-import * as util from './util';
-import Dictionary from './Dictionary';
-import Set from './Set';
+import * as util from "./util";
+import Dictionary from "./Dictionary";
+import Set from "./Set";
 
 export default class Bag<T> {
 
@@ -50,7 +50,7 @@ export default class Bag<T> {
       if (!this.contains(element)) {
         const node = {
           value: element,
-          copies: nCopies
+          copies: nCopies,
         };
         this.dictionary.setValue(element, node);
       } else {

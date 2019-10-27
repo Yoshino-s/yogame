@@ -4,13 +4,12 @@ export const has = function(obj: any, prop: any): boolean {
 };
 
 
-
 /**
  * Checks if the given argument is a function.
  * @function
  */
 export function isFunction(func: any): boolean {
-  return (typeof func) === 'function';
+  return (typeof func) === "function";
 }
 
 /**
@@ -18,7 +17,7 @@ export function isFunction(func: any): boolean {
  * @function
  */
 export function isUndefined(obj: any): obj is undefined {
-  return (typeof obj) === 'undefined';
+  return (typeof obj) === "undefined";
 }
 
 /**
@@ -26,7 +25,7 @@ export function isUndefined(obj: any): obj is undefined {
  * @function
  */
 export function isString(obj: any): boolean {
-  return Object.prototype.toString.call(obj) === '[object String]';
+  return Object.prototype.toString.call(obj) === "[object String]";
 }
 
 /**
@@ -81,28 +80,28 @@ export function defaultEquals<T>(a: T, b: T): boolean {
  */
 export function defaultToString(item: any): string {
   if (item === null) {
-    return 'COLLECTION_NULL';
+    return "COLLECTION_NULL";
   } else if (isUndefined(item)) {
-    return 'COLLECTION_UNDEFINED';
+    return "COLLECTION_UNDEFINED";
   } else if (isString(item)) {
-    return '$s' + item;
+    return `$s${ item}`;
   } else {
-    return '$o' + item.toString();
+    return `$o${ item.toString()}`;
   }
 }
 
 /**
  * Joins all the properies of the object using the provided join string
  */
-export function makeString<T>(item: T, join = ','): string {
+export function makeString<T>(item: T, join = ","): string {
   if (item === null) {
-    return 'COLLECTION_NULL';
+    return "COLLECTION_NULL";
   } else if (isUndefined(item)) {
-    return 'COLLECTION_UNDEFINED';
+    return "COLLECTION_UNDEFINED";
   } else if (isString(item)) {
     return (item as any).toString();
   } else {
-    let toret = '{';
+    let toret = "{";
     let first = true;
     for (const prop in item) {
       if (has(item, prop)) {
@@ -111,10 +110,10 @@ export function makeString<T>(item: T, join = ','): string {
         } else {
           toret = toret + join;
         }
-        toret = toret + prop + ':' + (item as any)[prop];
+        toret = `${toret + prop }:${ (item as any)[prop]}`;
       }
     }
-    return toret + '}';
+    return `${toret }}`;
   }
 }
 

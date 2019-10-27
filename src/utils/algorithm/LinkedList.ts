@@ -1,5 +1,5 @@
-import * as util from './util';
-import * as arrays from './arrays';
+import * as util from "./util";
+import * as arrays from "./arrays";
 
 // A linked list node
 export interface LinkedListNode<T> {
@@ -400,7 +400,7 @@ export default class LinkedList<T> {
     private createNode(item: T): LinkedListNode<T> {
       return {
         element: item,
-        next: null
+        next: null,
       };
     }
 } // End of linked list

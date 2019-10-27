@@ -1,10 +1,10 @@
-import { ResolvedResource, logger } from './Resolver';
+import { ResolvedResource, logger, } from "./Resolver";
 
 export default class ResourceCache {
   identity: string;
   cache: Map<string, ResolvedResource>;
   constructor(identity?: string) {
-    this.identity = identity?identity:"";
+    this.identity = identity ? identity : "";
     this.cache = new Map();
   }
   cacheIt(resource: ResolvedResource): void {
@@ -23,5 +23,13 @@ export default class ResourceCache {
   clear(): void {
     this.cache.clear();
   }
-  static shared = new ResourceCache();
+  private static defaultInstance: ResourceCache;
+
+  static get default(): ResourceCache {
+    if (this.defaultInstance) {
+      return this.defaultInstance;
+    } else {
+      return (this.defaultInstance = new ResourceCache());
+    }
+  }
 }

@@ -1,4 +1,4 @@
-import * as util from './util';
+import * as util from "./util";
 
 // Used internally by dictionary
 export interface DictionaryPair<K, V> {
@@ -64,7 +64,7 @@ export default class Dictionary<K, V> {
      * undefined if the map contains no mapping for this key.
      */
     getValue(key: K): V | undefined {
-      const pair: DictionaryPair<K, V> = this.table['$' + this.toStr(key)];
+      const pair: DictionaryPair<K, V> = this.table[`$${ this.toStr(key)}`];
       if (util.isUndefined(pair)) {
         return undefined;
       }
@@ -89,7 +89,7 @@ export default class Dictionary<K, V> {
       }
 
       let ret: V | undefined;
-      const k = '$' + this.toStr(key);
+      const k = `$${ this.toStr(key)}`;
       const previousElement: DictionaryPair<K, V> = this.table[k];
       if (util.isUndefined(previousElement)) {
         this.nElements++;
@@ -99,7 +99,7 @@ export default class Dictionary<K, V> {
       }
       this.table[k] = {
         key: key,
-        value: value
+        value: value,
       };
       return ret;
     }
@@ -112,7 +112,7 @@ export default class Dictionary<K, V> {
      * there was no mapping for key.
      */
     remove(key: K): V | undefined {
-      const k = '$' + this.toStr(key);
+      const k = `$${ this.toStr(key)}`;
       const previousElement: DictionaryPair<K, V> = this.table[k];
       if (!util.isUndefined(previousElement)) {
         delete this.table[k];
@@ -208,10 +208,10 @@ export default class Dictionary<K, V> {
     }
 
     toString(): string {
-      let toret = '{';
+      let toret = "{";
       this.forEach((k, v) => {
         toret += `\n\t${k} : ${v}`;
       });
-      return toret + '\n}';
+      return `${toret }\n}`;
     }
 } // End of dictionary

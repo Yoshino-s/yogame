@@ -1,5 +1,5 @@
-import distance from './distance';
+import distance from "./distance";
 
 export {
-  distance
+  distance,
 };
