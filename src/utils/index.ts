@@ -3,6 +3,8 @@ import AJSON from "./AJSON";
 import Logger from "./logger";
 import Dictionary from "./algorithm/Dictionary";
 
+export type Tuple<TItem, TLength extends number> = [TItem, ...TItem[]] & { length: TLength };
+
 const noop = (): void => { };
 
 function top<T>(timeout: number): Promise<T> {
@@ -23,7 +25,7 @@ function PromiseTimeout<T>(executor: ((resolve: (value?: T | PromiseLike<T>) => 
 const dict = new Dictionary<string, number>();
 
 function UID(namespace?: string): string {
-  if (namespace === undefined) namespace = "defalut";
+  if (namespace === undefined) namespace = "default";
   if (dict.containsKey(namespace)) {
     let id = dict.getValue(namespace) as number;
     dict.setValue(namespace, ++id);

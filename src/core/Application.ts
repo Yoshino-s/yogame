@@ -10,7 +10,6 @@ import { ImageResolver, } from "../managers/ResourcesResolvers/ImageResolver";
 import AnimationManager from "../managers/AnimationManager";
 import { SpriteRenderer, } from "../DisplayObject/SpriteRenderer";
 import { DisplayObject, } from "../DisplayObject/DisplayObject";
-import { WebGLRenderer, } from "../renderer/WebGL/WebGLRenderer";
 
 interface ApplicationEvents {
   "resize": (app: Application) => void;
@@ -80,6 +79,10 @@ class Application extends (EventEmitter as {new(): ApplicationEmitter}){
     this.width = this.canvas.height = height;
     this.height = this.canvas.width = width;
     this.emit("resize", this);
+  }
+
+  DisplayObject(id: string): DisplayObject {
+    return new DisplayObject(this, id);
   }
 
   private render(time: number): void {

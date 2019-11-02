@@ -50,7 +50,7 @@ function transformToDefault(point: Point, type: CoordinateType): Point {
   }
 }
 
-function transfromFromDefault(point: Point, type: CoordinateType): Point {
+function transformFromDefault(point: Point, type: CoordinateType): Point {
   switch(type) {
     case CoordinateType.Default:
     case CoordinateType.Browser:
@@ -73,4 +73,4 @@ function normalize(value: number, rawRange: number[], newRange: number[]): numbe
   return (value - rawRange[0]) * (newRange[1] - newRange[0]) / (rawRange[1] - rawRange[0]) + newRange[0];
 }
 
-export { transformToDefault, transfromFromDefault, normalize, };
+export { transformToDefault, transformFromDefault, normalize, };

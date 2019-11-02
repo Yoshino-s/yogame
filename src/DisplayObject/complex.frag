@@ -5,6 +5,8 @@ uniform sampler2D u_Sampler[%count%];
 varying vec2 v_TexCoord;
 varying float v_TextureIndex;
 
+varying mat4 v_Filter;
+
 vec4 getSamplerTexture() {
   int t = int(v_TextureIndex);
   for(int i = 0; i< %count%; i++) {
@@ -16,5 +18,5 @@ vec4 getSamplerTexture() {
 }
 
 void main() {
-  gl_FragColor = getSamplerTexture();
+  gl_FragColor = v_Filter * getSamplerTexture();
 }

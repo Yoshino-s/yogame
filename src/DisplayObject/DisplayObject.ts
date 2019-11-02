@@ -4,6 +4,7 @@ import { RendererTexture, } from "../renderer/WebGL/RendererTexture";
 import { Point, } from "../math/coordinate/baseInterface";
 import constant from "../constant";
 import Application from "../core/Application";
+import { Tuple, } from "../utils/index";
 
 export class DisplayObject {
   texture: RendererTexture;
@@ -16,6 +17,16 @@ export class DisplayObject {
   render = true;
   children = new Set<DisplayObject>();
   parent?: DisplayObject;
+  absolute = false;
+  filter: Tuple<number, 16> = [ 1, 0, 0, 0,
+    0, 1, 0, 0,
+    0, 0, 1, 0,
+    0, 0, 0, 1,
+  ];
+  transform: Tuple<number, 4> = [ 
+    1, 0,
+    0, 1,
+  ];
   constructor(app: Application, id: string) {
     this.texture = new RendererTexture(app.spriteRenderer.gl, id);
     this.width = this.texture.width;

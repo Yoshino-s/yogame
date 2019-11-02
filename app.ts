@@ -1,30 +1,38 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import path0 from "./assets/favicon.jpg";
 import path1 from "./assets/body_wall.png";
-import { DisplayObject, } from "./src/DisplayObject/DisplayObject";
 import Application from "./src/core/Application";
 
-window.onload = async function(): Promise<void>{
-
-  const a = document.getElementById("233") as HTMLCanvasElement;
+window.onload = async function (): Promise<void>{
+  const a = Array.from(document.getElementsByTagName("canvas")).find(v=>v.id === "233");
 
   const app = new Application(a);
 
   const id0 = (await app.ResourceManager.load(path0)).id;
   const id1 = (await app.ResourceManager.load(path1)).id;
-  const s = new DisplayObject(app, id0);
+  const s = app.DisplayObject(id0);
   s.position = { x: 200, y: 200, };
   s.center = { x: 0.5, y: 0.5, };
   s.width = 300;
   s.height = 300;
+  s.filter = [
+    0.8, 0, 0, 0,
+    0, 0.7, 0, 0,
+    0, 0, 0.2, 0,
+    0, 0, 0, 1,
+  ];
   app.stage.addChildren(s);
-  const c = new DisplayObject(app, id1);
+  const c = app.DisplayObject(id1);
   s.addChildren(c);
   c.globalX = 200;
   c.globalY = 200;
   c.center = { x: 0.5, y: 0.5, };
   c.width = 100;
   c.height = 100;
+  c.transform = [
+    1, 0,
+    0, 1,
+  ];
   const im = app.InteractionManager;
 
   let vx = 215;
@@ -34,7 +42,7 @@ window.onload = async function(): Promise<void>{
   let gy = 200;
   
   app.on("render", function (time: number): void {
-    s.x = im.mouse.status.point.x - app.rect.left;    
+    s.x = im.mouse.status.point.x - app.rect.left;
     s.y = im.mouse.status.point.y - app.rect.top;
 
     gx += vx * time / 1000;

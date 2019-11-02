@@ -31,6 +31,52 @@ export function setAttribute(gl: WebGLRenderingContext, type: number, location: 
   mapper[type]();
 }
 
+export function bindAttribute(gl: WebGLRenderingContext, type: number, size: number, location: number, stride: number, offset: number, fSize: number): void {
+  const mapper = {
+    [gl.FLOAT](): void {
+      gl.vertexAttribPointer(location, size, gl.FLOAT, false, fSize * stride, fSize * offset);
+      gl.enableVertexAttribArray(location);
+    },
+    [gl.FLOAT_VEC2](): void {
+      gl.vertexAttribPointer(location, size, gl.FLOAT, false, fSize * stride, fSize * offset);
+      gl.enableVertexAttribArray(location);
+    },
+    [gl.FLOAT_VEC3](): void {
+      gl.vertexAttribPointer(location, size, gl.FLOAT, false, fSize * stride, fSize * offset);
+      gl.enableVertexAttribArray(location);
+    },
+    [gl.FLOAT_VEC4](): void {
+      gl.vertexAttribPointer(location, size, gl.FLOAT, false, fSize * stride, fSize * offset);
+      gl.enableVertexAttribArray(location);
+    },
+    [gl.FLOAT_MAT2](): void {
+      gl.vertexAttribPointer(location, size / 2, gl.FLOAT, false, fSize * stride, fSize * offset);
+      gl.enableVertexAttribArray(location);
+      gl.vertexAttribPointer(location + 1, size / 2, gl.FLOAT, false, fSize * stride, fSize * offset + fSize * size / 2);
+      gl.enableVertexAttribArray(location + 1);
+    },
+    [gl.FLOAT_MAT3](): void {
+      gl.vertexAttribPointer(location, size / 3, gl.FLOAT, false, fSize * stride, fSize * offset);
+      gl.enableVertexAttribArray(location);
+      gl.vertexAttribPointer(location + 1, size / 3, gl.FLOAT, false, fSize * stride, fSize * offset + fSize * size / 3);
+      gl.enableVertexAttribArray(location + 1);
+      gl.vertexAttribPointer(location + 2, size / 3, gl.FLOAT_VEC3, false, fSize * stride, fSize * offset + fSize * 2 * size / 3);
+      gl.enableVertexAttribArray(location + 2);
+    },
+    [gl.FLOAT_MAT4](): void {
+      gl.vertexAttribPointer(location, size / 4, gl.FLOAT, false, fSize * stride, fSize * offset);
+      gl.enableVertexAttribArray(location);
+      gl.vertexAttribPointer(location + 1, size / 4, gl.FLOAT, false, fSize * stride, fSize * offset + fSize * size / 4);
+      gl.enableVertexAttribArray(location + 1);
+      gl.vertexAttribPointer(location + 2, size / 4, gl.FLOAT, false, fSize * stride, fSize * offset + fSize * 2 * size / 4);
+      gl.enableVertexAttribArray(location + 2);
+      gl.vertexAttribPointer(location + 3, size / 4, gl.FLOAT, false, fSize * stride, fSize * offset + fSize * 3 * size / 4);
+      gl.enableVertexAttribArray(location + 3);
+    },
+  };
+  mapper[type]();
+}
+
 export function setUniform(gl: WebGLRenderingContext, type: number, location: WebGLUniformLocation, v: Float32Array | Int32Array | Array<number>): void {
   const mapper = {
     [gl.FLOAT](): void {

@@ -1,5 +1,5 @@
 import { logger, RendererError, } from "../Renderer";
-import { setAttribute, } from "./utils";
+import { setAttribute, bindAttribute, } from "./utils";
 import { RendererProgram, } from "./RendererProgram";
 import { RendererBuffer, } from "./RendererBuffer";
 
@@ -30,12 +30,11 @@ export class RendererAttribute {
     gl.disableVertexAttribArray(this.location);
   }
 
-  bindBuffer(stride: number, offset: number): void {
-    this.glProgram.gl.vertexAttribPointer(this.location, this.size, this.glProgram.gl.FLOAT, false, stride, offset);
-    this.glProgram.gl.enableVertexAttribArray(this.location);
+  bindBuffer(stride: number, offset: number, fSize: number): void {
+    bindAttribute(this.glProgram.gl, this.type, this.size, this.location, stride, offset, fSize);
   }
   
-  destory(): void {
+  destroy(): void {
     //TODO
   }
 }
@@ -49,7 +48,7 @@ export type AttributeStructureInfo = {
   [key: string]: Attribute;
 }
 
-export type AttributeStrucureData<T extends AttributeStructureInfo> = {
+export type AttributeStructureData<T extends AttributeStructureInfo> = {
   [K in keyof T]: number[];
 }
 
@@ -57,7 +56,7 @@ export class RendererAttributeStructure<T extends AttributeStructureInfo> {
   glProgram: RendererProgram;
   attributes: Map<keyof T, RendererAttribute>;
   stride = 0;
-  private data: AttributeStrucureData<T>[] = [];
+  private data: AttributeStructureData<T>[] = [];
   constructor(glProgram: RendererProgram, structure: T) {
     this.glProgram = glProgram;
     this.attributes = new Map<keyof T, RendererAttribute>();
@@ -74,7 +73,7 @@ export class RendererAttributeStructure<T extends AttributeStructureInfo> {
     return this.data.length;
   }
 
-  addData(...data: AttributeStrucureData<T>[]): void {
+  addData(...data: AttributeStructureData<T>[]): void {
     this.data = this.data.concat(data);
   }
 
@@ -85,7 +84,7 @@ export class RendererAttributeStructure<T extends AttributeStructureInfo> {
   buildBuffer(): Float32Array {
     const buffer: number[] = [];
     let k = 0;
-    this.data.forEach((v: AttributeStrucureData<T>): void=>{
+    this.data.forEach((v: AttributeStructureData<T>): void=>{
       for(const key in v) {
         if(v[key].length !== (this.attributes.get(key) as RendererAttribute).size) {
           const info = `Wrong size of attribute locate ${key}`;
@@ -105,14 +104,14 @@ export class RendererAttributeStructure<T extends AttributeStructureInfo> {
     rendererBuffer.bufferData(buffer);
     const fSize = buffer.BYTES_PER_ELEMENT;
     for(const [ , attribute, ] of this.attributes) {
-      attribute.bindBuffer(this.stride * fSize, k * fSize);
+      attribute.bindBuffer(this.stride, k, fSize);
       k += attribute.size;
     }
   }
 
   destroy(): void {
     for(const [ , attr, ] of this.attributes) {
-      attr.destory();
+      attr.destroy();
     }
     delete this.attributes;
   }

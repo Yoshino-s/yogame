@@ -3,8 +3,3 @@ export interface Point {
   y: number;
   z?: number;
 }
-
-export interface Line {
-  start: Point;
-  end: Point;
-}
