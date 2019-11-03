@@ -1,12 +1,30 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import { isNumber, } from "util";
+import StrictEventEmitter from "strict-event-emitter-types";
+import { EventEmitter, } from "events";
 import { RendererTexture, } from "../renderer/WebGL/RendererTexture";
 import { Point, } from "../math/coordinate/baseInterface";
 import constant from "../constant";
 import Application from "../core/Application";
-import { Tuple, } from "../utils/index";
+import { Tuple, UID, } from "../utils/index";
+import Logger from "../utils/logger";
 
-export class DisplayObject {
+export const logger = new Logger("DisplayObject");
+
+type DisplayObjectEvents = {
+  moveIn: () => void;
+  moveOut: () => void;
+  down: () => void;
+  up: () => void;
+  upOut: () => void;
+  move: () => void;
+}
+
+type DisplayObjectEmitter = StrictEventEmitter<EventEmitter, DisplayObjectEvents>;
+
+
+export class DisplayObject extends (EventEmitter as { new(): DisplayObjectEmitter }) {
+  uid = UID("DisplayObject");
   texture: RendererTexture;
   position: Point = { x: 0, y: 0, z: constant.Layer.DEFAULT, };
   center: Point = { x: 0, y: 0, };
@@ -18,6 +36,8 @@ export class DisplayObject {
   children = new Set<DisplayObject>();
   parent?: DisplayObject;
   absolute = false;
+  interaction = false;
+  moveInObject = false;
   filter: Tuple<number, 16> = [ 1, 0, 0, 0,
     0, 1, 0, 0,
     0, 0, 1, 0,
@@ -28,6 +48,7 @@ export class DisplayObject {
     0, 1,
   ];
   constructor(app: Application, id: string) {
+    super();
     this.texture = new RendererTexture(app.spriteRenderer.gl, id);
     this.width = this.texture.width;
     this.height = this.texture.height;
@@ -63,10 +84,10 @@ export class DisplayObject {
     this.position.z = z;
   }
   get globalX(): number {
-    return this.parent ? this.parent.globalX + this.position.x : this.position.x;
+    return this.parent && !this.absolute ? this.parent.globalX + this.position.x : this.position.x;
   }
   set globalX(v: number) {
-    if (this.parent) {
+    if (this.parent && !this.absolute) {
       this.position.x = v - this.parent.globalX;
     }
     else {
@@ -74,15 +95,28 @@ export class DisplayObject {
     }
   }
   get globalY(): number {
-    return this.parent ? this.parent.globalY + this.position.y : this.position.y;
+    return this.parent && !this.absolute ? this.parent.globalY + this.position.y : this.position.y;
   }
   set globalY(v: number) {
-    if (this.parent) {
+    if (this.parent && !this.absolute) {
       this.position.y = v - this.parent.globalY;
     }
     else {
       this.position.y = v;
     }
+  }
+  //rect
+  get top(): number {
+    return -this.width * this.scale * this.center.x + this.globalX;
+  }
+  get bottom(): number {
+    return this.top + this.height;
+  }
+  get left(): number {
+    return -this.height * this.scale * this.center.y + this.globalY;
+  }
+  get right(): number {
+    return this.left + this.width;
   }
   destroy(): void {
     delete this.texture;

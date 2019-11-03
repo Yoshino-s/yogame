@@ -70,7 +70,7 @@ export class SpriteRenderer extends WebGLRenderer {
   render(): void {
     if (!this.root) return;
     this.program.use();
-    this.addRenderData(this.root, 0, 0);
+    this.addRenderData(this.root);
     if (this.textures.length) this._render();
   }
 
@@ -88,17 +88,15 @@ export class SpriteRenderer extends WebGLRenderer {
     this.clearRenderData();
   }
 
-  addRenderData(root: DisplayObject, px = 0, py = 0): void {
+  addRenderData(root: DisplayObject): void {
     if (!root.render) return;
     if (this.textures.length === 8) {
       this._render();
     }
     const width = this.canvas.width;
     const height = this.canvas.height;
-    const rx = root.position.x + px;
-    const ry = root.position.y + py;
-    const x = -root.width * root.scale * root.center.x + (root.absolute ? 0 : rx);
-    const y = -root.height * root.scale * root.center.y + (root.absolute ? 0 : ry);
+    const x = -root.width * root.scale * root.center.x + root.position.x + root.globalX;
+    const y = -root.height * root.scale * root.center.y + root.globalY;
     const z = root.z;
     const { x: x0, y: y0, } = transformFromDefault({ x: x / width, y: y / height, }, CoordinateType.WebGL);
     const { x: x1, y: y1, } = transformFromDefault({ x: (x + root.width) / width, y: (y + root.height) / height, }, CoordinateType.WebGL);
@@ -141,7 +139,7 @@ export class SpriteRenderer extends WebGLRenderer {
       this.elementArray = this.elementArray.concat([ index, index, index + 1, index + 2, index + 3, index + 3, ]);
       this.index += 4;
     }
-    root.children.forEach(c => this.addRenderData(c, rx, ry));
+    root.children.forEach(c => this.addRenderData(c));
   }
 
   clearRenderData(): void {

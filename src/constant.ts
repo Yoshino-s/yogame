@@ -13,7 +13,7 @@ const constant = {
   Layer: {
     DEFAULT: 1,
     RESERVED_0: 0.9,
-    RRSERVED_1: 0.8,
+    RESERVED_1: 0.8,
     RESERVED_2: 0.7,
     BACKGROUND: 0.6,
     TILE_0:0.5,
@@ -26,7 +26,7 @@ const constant = {
     UI_1:-0.2,
     UI_2:-0.3,
     RESERVED_3: -0.4,
-    RRSERVED_4: -0.5,
+    RESERVED_4: -0.5,
     RESERVED_5: -0.6,
   },
 };

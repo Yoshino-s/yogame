@@ -10,6 +10,7 @@ import { ImageResolver, } from "../managers/ResourcesResolvers/ImageResolver";
 import AnimationManager from "../managers/AnimationManager";
 import { SpriteRenderer, } from "../DisplayObject/SpriteRenderer";
 import { DisplayObject, } from "../DisplayObject/DisplayObject";
+import { SpriteInteraction, } from "../DisplayObject/SpriteInteraction";
 
 interface ApplicationEvents {
   "resize": (app: Application) => void;
@@ -27,9 +28,9 @@ class Application extends (EventEmitter as {new(): ApplicationEmitter}){
   width: number;
   height: number;
   spriteRenderer: SpriteRenderer;
+  spriteInteraction: SpriteInteraction;
   AnimationManager: AnimationManager;
   stage: DisplayObject;
-  rect: ClientRect | DOMRect;
   constructor(canvas?: HTMLCanvasElement | HTMLElement, width?: number, height?: number) {
     super();
     if(!canvas) {
@@ -50,10 +51,6 @@ class Application extends (EventEmitter as {new(): ApplicationEmitter}){
     this.width = width;
     this.height = height;
 
-    this.resize();
-
-    this.rect = canvas.getBoundingClientRect();
-
     this.AnimationManager = new AnimationManager();
     this.AnimationManager.setRender(t=>this.render(t));
 
@@ -64,12 +61,16 @@ class Application extends (EventEmitter as {new(): ApplicationEmitter}){
     this.ResourceManager.use(new RawResolver(), true);
     this.ResourceManager.use(new JSONResolver());
     this.ResourceManager.use(new ImageResolver());
-
+    
     this.spriteRenderer = new SpriteRenderer(this.canvas);
-
-    this.stage = new DisplayObject(this, "empty");
-
+    
+    this.stage = this.DisplayObject("empty");
+    this.stage.width = this.width;
+    this.stage.height = this.height;
+    
     this.spriteRenderer.setRoot(this.stage);
+
+    this.spriteInteraction = new SpriteInteraction(this);
   }
 
   resize(width?: number, height?: number): void {
@@ -78,11 +79,19 @@ class Application extends (EventEmitter as {new(): ApplicationEmitter}){
 
     this.width = this.canvas.height = height;
     this.height = this.canvas.width = width;
+
+    this.stage.width = this.width;
+    this.stage.height = this.height;
+
     this.emit("resize", this);
   }
 
   DisplayObject(id: string): DisplayObject {
     return new DisplayObject(this, id);
+  }
+
+  get rect(): ClientRect | DOMRect {
+    return this.canvas.getBoundingClientRect();
   }
 
   private render(time: number): void {
