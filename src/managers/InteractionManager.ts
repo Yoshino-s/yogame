@@ -15,11 +15,13 @@ export default class InteractionManager extends (EventEmitter as {new(): Interac
   keyboard: KeyboardResolver;
   mouse: MouseResolver;
   touch: TouchResolver;
-  constructor() {
+  element: EventTarget;
+  constructor(element: EventTarget) {
     super();
-    this.keyboard = new KeyboardResolver();
-    this.mouse = new MouseResolver();
-    this.touch = new TouchResolver();
+    this.element = element;
+    this.keyboard = new KeyboardResolver(element);
+    this.mouse = new MouseResolver(element);
+    this.touch = new TouchResolver(element);
   }
   private static defaultInstance: InteractionManager;
 
@@ -27,7 +29,7 @@ export default class InteractionManager extends (EventEmitter as {new(): Interac
     if (this.defaultInstance) {
       return this.defaultInstance;
     } else {
-      return (this.defaultInstance = new InteractionManager());
+      return (this.defaultInstance = new InteractionManager(document.body));
     }
   }
 }

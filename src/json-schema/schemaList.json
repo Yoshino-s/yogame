@@ -1,0 +1,7 @@
+[
+  {
+    "tsSource": "./tileset-schema.ts",
+    "output": "./tileset-schema.schema.js",
+    "typeName": "Tileset"
+  }
+]

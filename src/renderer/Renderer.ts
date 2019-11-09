@@ -9,6 +9,6 @@ export abstract class Renderer {
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
   }
-  abstract render(): void;
+  abstract render(deltaTime: number): void;
   abstract destroy(): void;
 }

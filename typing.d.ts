@@ -17,3 +17,13 @@ declare module "*.png" {
   const path: string;
   export default path;
 }
+
+declare module "*.json" {
+  const result: any;
+  export default result;
+}
+
+declare module "*.schema.js" {
+  const validate: (obj: any) => number;
+  export default validate;
+}

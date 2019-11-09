@@ -20,14 +20,16 @@ type KeyboardEmitter = StrictEventEmitter<EventEmitter, Events>;
 
 export class KeyboardResolver extends (EventEmitter as { new(): KeyboardEmitter }) {
   holdKeys: Map<string, KeyInfo> = new Map<string, KeyInfo>();
-  constructor() {
+  element: EventTarget;
+  constructor(element: EventTarget) {
     // eslint-disable-next-line constructor-super
     super();
+    this.element = element;
     this.initiateEvents();
   }
   initiateEvents(): void {
     [ "keyup", "keypress", "keydown", ].forEach(k => {
-      window.addEventListener(k, e => this.processEvent(e as KeyboardEvent));
+      this.element.addEventListener(k as "keyup"| "keypress"| "keydown", e => this.processEvent(e as KeyboardEvent));
     });
   }
   processEvent(event: KeyboardEvent): void {
@@ -69,7 +71,7 @@ export class KeyboardResolver extends (EventEmitter as { new(): KeyboardEmitter 
     if (this.defaultInstance) {
       return this.defaultInstance;
     } else {
-      return (this.defaultInstance = new KeyboardResolver());
+      return (this.defaultInstance = new KeyboardResolver(document.body));
     }
   }
 }

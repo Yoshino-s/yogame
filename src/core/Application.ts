@@ -9,8 +9,11 @@ import { JSONResolver, } from "../managers/ResourcesResolvers/JSONResolver";
 import { ImageResolver, } from "../managers/ResourcesResolvers/ImageResolver";
 import AnimationManager from "../managers/AnimationManager";
 import { SpriteRenderer, } from "../DisplayObject/SpriteRenderer";
-import { DisplayObject, } from "../DisplayObject/DisplayObject";
+import DisplayObject from "../DisplayObject/DisplayObject";
 import { SpriteInteraction, } from "../DisplayObject/SpriteInteraction";
+import { Rect, } from "../math/coordinate/baseInterface";
+import { RendererTexture, } from "../renderer/WebGL/RendererTexture";
+import AnimationDisplayObject from "../DisplayObject/AnimationDisplayObject";
 
 interface ApplicationEvents {
   "resize": (app: Application) => void;
@@ -55,7 +58,7 @@ class Application extends (EventEmitter as {new(): ApplicationEmitter}){
     this.AnimationManager.setRender(t=>this.render(t));
 
     this.TaskManager = new TaskManager();
-    this.InteractionManager = new InteractionManager();
+    this.InteractionManager = new InteractionManager(canvas);
 
     this.ResourceManager = new ResourceManager();
     this.ResourceManager.use(new RawResolver(), true);
@@ -86,8 +89,12 @@ class Application extends (EventEmitter as {new(): ApplicationEmitter}){
     this.emit("resize", this);
   }
 
-  DisplayObject(id: string): DisplayObject {
-    return new DisplayObject(this, id);
+  DisplayObject(texture: { id: string; rect?: Rect} | RendererTexture | string, rect?: Rect): DisplayObject {
+    return new DisplayObject(this, texture, rect);
+  }
+
+  AnimationDisplayObject(textures: ({ id: string; rect?: Rect } | RendererTexture | string)[], rects?: Rect[]): AnimationDisplayObject {
+    return new AnimationDisplayObject(this, textures, rects);
   }
 
   get rect(): ClientRect | DOMRect {
@@ -95,7 +102,7 @@ class Application extends (EventEmitter as {new(): ApplicationEmitter}){
   }
 
   private render(time: number): void {
-    this.spriteRenderer.render();
+    this.spriteRenderer.render(time);
     this.emit("render", time);
   }
 }

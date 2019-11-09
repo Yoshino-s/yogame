@@ -1,4 +1,10 @@
 import { logger, RendererError, } from "../Renderer";
+import { Rect, } from "../../math/coordinate/baseInterface";
+
+function serialize(id: string, rect?: Rect): string {
+  if (!rect) return id;
+  return `${id}-${rect.top}_${rect.left}_${rect.bottom}_${rect.right}`;
+}
 
 export const maxTextureUnits = (function(): number{
   const gl = document.createElement("canvas").getContext("webgl");
@@ -19,10 +25,12 @@ export class RendererTexture {
   width = 0;
   height = 0;
   id!: string;
-  constructor(gl: WebGLRenderingContext, id: string) {
-    const h = TextureCache.get(id);
+  rect?: Rect;
+  constructor(gl: WebGLRenderingContext, id: string, rect?: Rect) {
+    const sid = serialize(id, rect);
+    const h = TextureCache.get(sid);
     if (h) return h;
-    this.id = id;
+    this.id = sid;
     if (id !== "empty") {
       if(!ImageCache.has(id)) {
         const info = `Cannot find image(id: ${id}).Maybe you should load it first.`;
@@ -41,9 +49,9 @@ export class RendererTexture {
         throw new RendererError(info);
       }
       this.texture = texture;
+      this.rect = rect;
     }
-    
-    TextureCache.set(id, this);
+    TextureCache.set(sid, this);
   }
   bindTexture(location: number, parameter?: [number, number][], format?: number): void {
     if (this.id !== "empty") {

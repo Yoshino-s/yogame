@@ -10,6 +10,7 @@ module.exports = {
   entry: "./app.ts",
   devServer: {
     contentBase: "./dist",
+    host: "0.0.0.0",
   },
   module: {
     rules: [
@@ -54,7 +55,7 @@ module.exports = {
   plugins: [
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
-      title: "PIXI demo",
+      title: "Yogame demo",
       template: "./src/template.html",
     }),
     new webpack.SourceMapDevToolPlugin({

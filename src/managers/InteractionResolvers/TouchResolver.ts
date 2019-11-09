@@ -42,15 +42,17 @@ export class TouchResolver extends (EventEmitter as { new(): TouchEmitter }) {
     touches: new Map<number, SingleTouchInfo>(),
   };
   options: TouchResolverOptions;
-  constructor (options: TouchResolverOptions = { forceUpdate: true, advanced: false, }) {
+  element: EventTarget;
+  constructor (element: EventTarget, options: TouchResolverOptions = { forceUpdate: true, advanced: false, }) {
     // eslint-disable-next-line constructor-super
     super();
+    this.element = element;
     this.options = options;
     this.initiateEvents();
   }
   initiateEvents(): void {
     [ "touchstart", "touchmove", "touchend", "touchcancel", ].forEach(k => {
-      window.addEventListener(k, e => this.processEvent(e as TouchEvent));
+      this.element.addEventListener(k, e => this.processEvent(e as TouchEvent));
     });
   }
   processEvent(event: TouchEvent): void {
@@ -78,8 +80,9 @@ export class TouchResolver extends (EventEmitter as { new(): TouchEmitter }) {
           rotationAngle: event.touches[i].rotationAngle,
         };
       }
-      if (touchesCache.has(touch.id)) {
+      if (touchesCache.get(touch.id)) {
         if (this.options.forceUpdate || JSON.stringify(touch) !== JSON.stringify(touchesCache.get(touch.id))) {
+          preventDefault();
           this.emit("move", touch, this.status, preventDefault);
           this.status.touches.set(touch.id, touch);
           touchesCache.delete(touch.id);
@@ -92,7 +95,6 @@ export class TouchResolver extends (EventEmitter as { new(): TouchEmitter }) {
         this.emit("up", i[1], this.status, preventDefault);
       }
     }
-    this.status.touches = touchesCache;
   }
 
   private static defaultInstance: TouchResolver;
@@ -101,7 +103,7 @@ export class TouchResolver extends (EventEmitter as { new(): TouchEmitter }) {
     if (this.defaultInstance) {
       return this.defaultInstance;
     } else {
-      return (this.defaultInstance = new TouchResolver());
+      return (this.defaultInstance = new TouchResolver(document.body));
     }
   }
 }

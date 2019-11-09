@@ -9,8 +9,8 @@ import { TextureCache, } from "../renderer/WebGL/RendererTexture";
 import { RendererUniform, } from "../renderer/WebGL/RendererUniform";
 import constant from "../constant";
 import { RendererBuffer, } from "../renderer/WebGL/RendererBuffer";
-import { DisplayObject, } from "./DisplayObject";
-import { m224, } from "../math/matrix/SimpleMatrixTransform";
+import DisplayObject from "./DisplayObject";
+import AnimationDisplayObject from "./AnimationDisplayObject";
 
 const SpriteRendererAttributeInfo = {
   a_Position: {
@@ -29,9 +29,9 @@ const SpriteRendererAttributeInfo = {
     size: 16,
     type: WebGLConstants.FLOAT_MAT4,
   },
-  a_Transform: {
-    size: 16,
-    type: WebGLConstants.FLOAT_MAT4,
+  a_ColorOffset: {
+    size: 4,
+    type: WebGLConstants.FLOAT_VEC4,
   },
 };
 
@@ -45,6 +45,8 @@ export class SpriteRenderer extends WebGLRenderer {
   private textures: [string, number][] = [];
   private textureUniform: RendererUniform[] = [];
   private viewportUniform: RendererUniform;
+  deltaTime = 0;
+  time = 0;
   constructor(canvas: HTMLCanvasElement) {
     super(canvas, VertexSource, FragmentSource.replace(/%count%/g, `${constant.DefaultValues.MAX_TEXTURE_NUMBER}`));
     this.attributeStructure = new RendererAttributeStructure(this.program, SpriteRendererAttributeInfo);
@@ -67,7 +69,9 @@ export class SpriteRenderer extends WebGLRenderer {
     this.root = root;
   }
 
-  render(): void {
+  render(deltaTime: number): void {
+    this.deltaTime = deltaTime;
+    this.time = performance.now();
     if (!this.root) return;
     this.program.use();
     this.addRenderData(this.root);
@@ -93,15 +97,39 @@ export class SpriteRenderer extends WebGLRenderer {
     if (this.textures.length === 8) {
       this._render();
     }
-    const width = this.canvas.width;
-    const height = this.canvas.height;
-    const x = -root.width * root.scale * root.center.x + root.position.x + root.globalX;
-    const y = -root.height * root.scale * root.center.y + root.globalY;
-    const z = root.z;
-    const { x: x0, y: y0, } = transformFromDefault({ x: x / width, y: y / height, }, CoordinateType.WebGL);
-    const { x: x1, y: y1, } = transformFromDefault({ x: (x + root.width) / width, y: (y + root.height) / height, }, CoordinateType.WebGL);
-
+    
     if (!root.hide) {
+      const width = this.canvas.width;
+      const height = this.canvas.height;
+      
+      const z = root.z;
+      const { x: x0, y: y0, } = transformFromDefault({ x: root.left / width, y:  root.top / height, }, CoordinateType.WebGL);
+      const { x: x1, y: y1, } = transformFromDefault({ x: root.right / width, y: root.bottom / height, }, CoordinateType.WebGL);
+
+      let tx0, tx1, ty0, ty1;
+      if (root.texture.rect) {
+        const tw = root.texture.width;
+        const th = root.texture.height;
+        const rect = root.texture.rect;
+        let res = transformFromDefault({ x: rect.left / tw, y: rect.top / th, }, CoordinateType.Image);
+        tx0 = res.x; ty0 = res.y;
+        res = transformFromDefault({ x: rect.right / tw, y: rect.bottom / th, }, CoordinateType.Image);
+        tx1 = res.x; ty1 = res.y;
+      } else {
+        tx0 = 0.0;
+        ty0 = 1.0;
+        tx1 = 1.0;
+        ty1 = 0.0;
+      }
+
+      if (root instanceof AnimationDisplayObject && root.animation) {
+        const interval = root.animationInterval;
+        if (interval <= 0) root.nextTexture();
+        else {
+          if(root.animationLoopLength !== 0) root.switchTexture(Math.round(this.time / interval) % root.animationLoopLength);
+        }
+      }
+      
       let i = this.textures.findIndex((v => v[0] === root.texture.id));
       if (i === -1) {
         this.textures.push([ root.texture.id, 1, ]);
@@ -109,31 +137,30 @@ export class SpriteRenderer extends WebGLRenderer {
       } else {
         this.textures[i][1]++;
       }
-      const m4 = m224(root.transform);
       this.attributeStructure.addData({
         a_Position: [ x0, y0, z, ],
-        a_TexCoord: [ 0.0, 1.0, ],
+        a_TexCoord: [ tx0, ty0, ],
         a_TextureIndex: [ i, ],
-        a_Filter: root.filter,
-        a_Transform: m4,
+        a_Filter: root.filter.filter,
+        a_ColorOffset: root.filter.offset,
       }, {
         a_Position: [ x0, y1, z, ],
-        a_TexCoord: [ 0.0, 0.0, ],
+        a_TexCoord: [ tx0, ty1, ],
         a_TextureIndex: [ i, ],
-        a_Filter: root.filter,
-        a_Transform: m4,
+        a_Filter: root.filter.filter,
+        a_ColorOffset: root.filter.offset,
       }, {
         a_Position: [ x1, y0, z, ],
-        a_TexCoord: [ 1.0, 1.0, ],
+        a_TexCoord: [ tx1, ty0, ],
         a_TextureIndex: [ i, ],
-        a_Filter: root.filter,
-        a_Transform: m4,
+        a_Filter: root.filter.filter,
+        a_ColorOffset: root.filter.offset,
       }, {
         a_Position: [ x1, y1, z, ],
-        a_TexCoord: [ 1.0, 0.0, ],
+        a_TexCoord: [ tx1, ty1, ],
         a_TextureIndex: [ i, ],
-        a_Filter: root.filter,
-        a_Transform: m4,
+        a_Filter: root.filter.filter,
+        a_ColorOffset: root.filter.offset,
       });
       const index = this.index;
       this.elementArray = this.elementArray.concat([ index, index, index + 1, index + 2, index + 3, index + 3, ]);

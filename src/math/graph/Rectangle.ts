@@ -15,6 +15,18 @@ export default class Rectangle implements Graph {
     const tx = this.x, ty = this.y;
     return tx < x && x < tx + this.width && ty < y && y < ty + this.height;
   }
+  get left(): number {
+    return this.x;
+  }
+  get top(): number {
+    return this.y;
+  }
+  get right(): number {
+    return this.x + this.height;
+  }
+  get bottom(): number {
+    return this.y + this.width;
+  }
   static EMPTY(): Rectangle {
     return new Rectangle(0, 0, 0, 0);
   }

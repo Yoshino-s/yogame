@@ -6,6 +6,8 @@ varying vec2 v_TexCoord;
 varying float v_TextureIndex;
 
 varying mat4 v_Filter;
+varying vec4 v_ColorOffset;
+
 
 vec4 getSamplerTexture() {
   int t = int(v_TextureIndex);
@@ -18,5 +20,5 @@ vec4 getSamplerTexture() {
 }
 
 void main() {
-  gl_FragColor = v_Filter * getSamplerTexture();
+  gl_FragColor = v_ColorOffset+ v_Filter * getSamplerTexture();
 }

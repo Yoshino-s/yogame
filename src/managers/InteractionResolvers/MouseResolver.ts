@@ -57,14 +57,16 @@ export class MouseResolver extends (EventEmitter as { new(): MouseEmitter }) {
     point: { x: 0, y: 0, },
     raw: new MouseEvent("mouseup"),
   };
-  constructor () {
+  element: EventTarget;
+  constructor (element: EventTarget) {
     // eslint-disable-next-line constructor-super
     super();
+    this.element = element;
     this.initiateEvents();
   }
   initiateEvents(): void {
     [ "mousedown", "mousemove", "mouseup", ].forEach(k => {
-      window.addEventListener(k, e => this.processEvent(e as MouseEvent));
+      this.element.addEventListener(k, e => this.processEvent(e as MouseEvent));
     });
   }
   processEvent(event: MouseEvent): void {
@@ -101,7 +103,7 @@ export class MouseResolver extends (EventEmitter as { new(): MouseEmitter }) {
     if (this.defaultInstance) {
       return this.defaultInstance;
     } else {
-      return (this.defaultInstance = new MouseResolver());
+      return (this.defaultInstance = new MouseResolver(document.body));
     }
   }
 }
@@ -117,14 +119,16 @@ export class WheelResolver extends (EventEmitter as { new(): WheelEmitter }) {
     x: 0, y: 0, z: 0,
     raw: new WheelEvent("wheel"),
   };
-  constructor () {
+  element: EventTarget;
+  constructor (element: EventTarget) {
     // eslint-disable-next-line constructor-super
     super();
+    this.element = element;
     this.initiateEvents();
   }
   initiateEvents(): void {
     [ "wheel", ].forEach(k => {
-      window.addEventListener(k, e => this.processEvent(e as WheelEvent));
+      this.element.addEventListener(k, e => this.processEvent(e as WheelEvent));
     });
   }
   processEvent(event: WheelEvent): void {
@@ -151,7 +155,7 @@ export class WheelResolver extends (EventEmitter as { new(): WheelEmitter }) {
     if (this.defaultInstance) {
       return this.defaultInstance;
     } else {
-      return (this.defaultInstance = new WheelResolver());
+      return (this.defaultInstance = new WheelResolver(document.body));
     }
   }
 }

@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/camelcase */
-import { isNumber, } from "util";
 import StrictEventEmitter from "strict-event-emitter-types";
 import { EventEmitter, } from "events";
 import { RendererTexture, } from "../renderer/WebGL/RendererTexture";
-import { Point, } from "../math/coordinate/baseInterface";
+import { Point, Rect, } from "../math/coordinate/baseInterface";
 import constant from "../constant";
 import Application from "../core/Application";
 import { Tuple, UID, } from "../utils/index";
 import Logger from "../utils/logger";
+import Filter from "../filter/Filter";
 
 export const logger = new Logger("DisplayObject");
 
@@ -18,12 +18,13 @@ type DisplayObjectEvents = {
   up: () => void;
   upOut: () => void;
   move: () => void;
+  moveOn: () => void;
 }
 
 type DisplayObjectEmitter = StrictEventEmitter<EventEmitter, DisplayObjectEvents>;
 
 
-export class DisplayObject extends (EventEmitter as { new(): DisplayObjectEmitter }) {
+export default class DisplayObject extends (EventEmitter as { new(): DisplayObjectEmitter }) {
   uid = UID("DisplayObject");
   texture: RendererTexture;
   position: Point = { x: 0, y: 0, z: constant.Layer.DEFAULT, };
@@ -37,19 +38,16 @@ export class DisplayObject extends (EventEmitter as { new(): DisplayObjectEmitte
   parent?: DisplayObject;
   absolute = false;
   interaction = false;
-  moveInObject = false;
-  filter: Tuple<number, 16> = [ 1, 0, 0, 0,
-    0, 1, 0, 0,
-    0, 0, 1, 0,
-    0, 0, 0, 1,
-  ];
+  filter = new Filter();
   transform: Tuple<number, 4> = [ 
     1, 0,
     0, 1,
   ];
-  constructor(app: Application, id: string) {
+  constructor(app: Application, texture: { id: string; rect?: Rect} | RendererTexture | string, rect?: Rect) {
     super();
-    this.texture = new RendererTexture(app.spriteRenderer.gl, id);
+    if (texture instanceof RendererTexture) this.texture = texture;
+    else if(typeof texture === "string") this.texture = new RendererTexture(app.spriteRenderer.gl, texture, rect);
+    else this.texture = new RendererTexture(app.spriteRenderer.gl, texture.id, texture.rect);
     this.width = this.texture.width;
     this.height = this.texture.height;
   }
@@ -78,7 +76,7 @@ export class DisplayObject extends (EventEmitter as { new(): DisplayObjectEmitte
     this.position.y = y;
   }
   get z(): number {
-    return isNumber(this.position.z) ? this.position.z : constant.Layer.DEFAULT;
+    return typeof this.position.z === "number" ? this.position.z : constant.Layer.DEFAULT;
   }
   set z(z: number) {
     this.position.z = z;
@@ -106,17 +104,17 @@ export class DisplayObject extends (EventEmitter as { new(): DisplayObjectEmitte
     }
   }
   //rect
-  get top(): number {
-    return -this.width * this.scale * this.center.x + this.globalX;
-  }
-  get bottom(): number {
-    return this.top + this.height;
-  }
   get left(): number {
-    return -this.height * this.scale * this.center.y + this.globalY;
+    return -this.width * this.scale * this.center.x + this.globalX;
   }
   get right(): number {
     return this.left + this.width;
+  }
+  get top(): number {
+    return -this.height * this.scale * this.center.y + this.globalY;
+  }
+  get bottom(): number {
+    return this.top + this.height;
   }
   destroy(): void {
     delete this.texture;
