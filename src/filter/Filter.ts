@@ -10,4 +10,7 @@ export default class Filter {
   offset: Tuple<number, 4> = [
     0, 0, 0, 0,
   ]
+  setOpacity(opacity: number) {
+    this.filter[15] = opacity;
+  }
 }

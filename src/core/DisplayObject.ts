@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import StrictEventEmitter from "strict-event-emitter-types";
 import { EventEmitter, } from "events";
-import { RendererTexture, } from "../renderer/WebGL/RendererTexture";
+import RendererTexture from "../webgl/RendererTexture";
 import { Point, Rect, } from "../math/coordinate/baseInterface";
 import constant from "../constant";
-import Application from "../core/Application";
 import { Tuple, UID, } from "../utils/index";
 import Logger from "../utils/logger";
 import Filter from "../filter/Filter";
+import RendererManager from "../renderer/RendererManager";
 
 export const logger = new Logger("DisplayObject");
 
@@ -23,8 +23,8 @@ type DisplayObjectEvents = {
 
 type DisplayObjectEmitter = StrictEventEmitter<EventEmitter, DisplayObjectEvents>;
 
-
 export default class DisplayObject extends (EventEmitter as { new(): DisplayObjectEmitter }) {
+  gl: WebGLRenderingContext
   uid = UID("DisplayObject");
   texture: RendererTexture;
   position: Point = { x: 0, y: 0, z: constant.Layer.DEFAULT, };
@@ -32,22 +32,26 @@ export default class DisplayObject extends (EventEmitter as { new(): DisplayObje
   width = 0;
   height = 0;
   scale = 1;
+  filter = new Filter();
   hide = false;
   render = true;
   children = new Set<DisplayObject>();
   parent?: DisplayObject;
   absolute = false;
   interaction = false;
-  filter = new Filter();
   transform: Tuple<number, 4> = [ 
     1, 0,
     0, 1,
   ];
-  constructor(app: Application, texture: { id: string; rect?: Rect} | RendererTexture | string, rect?: Rect) {
+  renderer = "default";
+  constructor(rendererManager: RendererManager, texture: { id: string; rect?: Rect} | HTMLCanvasElement | HTMLImageElement | RendererTexture | string, rect?: Rect) {
     super();
+    const gl = rendererManager.getRenderer(this.renderer).gl;
+    this.gl = gl;
     if (texture instanceof RendererTexture) this.texture = texture;
-    else if(typeof texture === "string") this.texture = new RendererTexture(app.spriteRenderer.gl, texture, rect);
-    else this.texture = new RendererTexture(app.spriteRenderer.gl, texture.id, texture.rect);
+    else if(texture instanceof HTMLCanvasElement || texture instanceof HTMLImageElement) this.texture = new RendererTexture(gl, UID("__name_texture"), rect, undefined, texture, true);
+    else if(typeof texture === "string") this.texture = new RendererTexture(gl, texture, rect);
+    else this.texture = new RendererTexture(gl, texture.id, texture.rect);
     this.width = this.texture.width;
     this.height = this.texture.height;
   }
@@ -108,13 +112,19 @@ export default class DisplayObject extends (EventEmitter as { new(): DisplayObje
     return -this.width * this.scale * this.center.x + this.globalX;
   }
   get right(): number {
-    return this.left + this.width;
+    return this.left + this.width * this.scale;
   }
   get top(): number {
     return -this.height * this.scale * this.center.y + this.globalY;
   }
   get bottom(): number {
-    return this.top + this.height;
+    return this.top + this.height * this.scale;
+  }
+  set opacity(o: number) {
+    this.filter.setOpacity(o);
+  }
+  get opacity(): number {
+    return this.filter.filter[15];
   }
   destroy(): void {
     delete this.texture;

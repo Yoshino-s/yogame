@@ -18,7 +18,7 @@ export interface KeyInfo {
 
 type KeyboardEmitter = StrictEventEmitter<EventEmitter, Events>;
 
-export class KeyboardResolver extends (EventEmitter as { new(): KeyboardEmitter }) {
+export default class KeyboardResolver extends (EventEmitter as { new(): KeyboardEmitter }) {
   holdKeys: Map<string, KeyInfo> = new Map<string, KeyInfo>();
   element: EventTarget;
   constructor(element: EventTarget) {

@@ -1,8 +1,9 @@
 import { EventEmitter, } from "events";
 import StrictEventEmitter from "strict-event-emitter-types";
-import { KeyboardResolver, } from "./InteractionResolvers/KeyboardResolver";
-import { MouseResolver, } from "./InteractionResolvers/MouseResolver";
-import { TouchResolver, } from "./InteractionResolvers/TouchResolver";
+import KeyboardResolver from "./InteractionResolvers/KeyboardResolver";
+import MouseResolver from "./InteractionResolvers/MouseResolver";
+import TouchResolver from "./InteractionResolvers/TouchResolver";
+import { WheelResolver, } from "./InteractionResolvers/WheelResolver";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface InteractionManagerEvents {
@@ -15,12 +16,15 @@ export default class InteractionManager extends (EventEmitter as {new(): Interac
   keyboard: KeyboardResolver;
   mouse: MouseResolver;
   touch: TouchResolver;
+
+  wheel: WheelResolver;
   element: EventTarget;
   constructor(element: EventTarget) {
     super();
     this.element = element;
     this.keyboard = new KeyboardResolver(element);
     this.mouse = new MouseResolver(element);
+    this.wheel = new WheelResolver(element);
     this.touch = new TouchResolver(element);
   }
   private static defaultInstance: InteractionManager;

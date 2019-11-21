@@ -1,43 +1,7 @@
-import { logger, RendererError, } from "../Renderer";
-import { setAttribute, bindAttribute, } from "./utils";
-import { RendererProgram, } from "./RendererProgram";
-import { RendererBuffer, } from "./RendererBuffer";
-
-export class RendererAttribute {
-  glProgram: RendererProgram;
-  name: string;
-  location: number;
-  size: number;
-  type: number;
-  constructor(glProgram: RendererProgram, name: string, type: number, size: number) {
-    const gl = glProgram.gl;
-    this.glProgram = glProgram;
-    this.name = name;
-    this.type = type;
-    this.location = gl.getAttribLocation(glProgram.program, name);
-    if(this.location < 0) {
-      const info = `Cannot locate the attribute ${ name }`;
-      logger.error(info);
-      throw new RendererError(info);
-    }
-    this.type = type;
-    this.size = size;
-  }
-
-  setData(data: number[]): void {
-    const gl = this.glProgram.gl;
-    setAttribute(gl, this.type, this.location, data);
-    gl.disableVertexAttribArray(this.location);
-  }
-
-  bindBuffer(stride: number, offset: number, fSize: number): void {
-    bindAttribute(this.glProgram.gl, this.type, this.size, this.location, stride, offset, fSize);
-  }
-  
-  destroy(): void {
-    //TODO
-  }
-}
+import RendererProgram from "./RendererProgram";
+import RendererAttribute from "./RendererAttribute";
+import { RendererError, logger, } from "../renderer/Renderer";
+import RendererBuffer from "./RendererBuffer";
 
 export type Attribute = {
   size: number;
@@ -52,11 +16,11 @@ export type AttributeStructureData<T extends AttributeStructureInfo> = {
   [K in keyof T]: number[];
 }
 
-export class RendererAttributeStructure<T extends AttributeStructureInfo> {
+export default class RendererAttributeStructure<T extends AttributeStructureInfo> {
   glProgram: RendererProgram;
   attributes: Map<keyof T, RendererAttribute>;
   stride = 0;
-  private data: AttributeStructureData<T>[] = [];
+  private data: AttributeStructureData<T>[][] = [];
   constructor(glProgram: RendererProgram, structure: T) {
     this.glProgram = glProgram;
     this.attributes = new Map<keyof T, RendererAttribute>();
@@ -74,7 +38,7 @@ export class RendererAttributeStructure<T extends AttributeStructureInfo> {
   }
 
   addData(...data: AttributeStructureData<T>[]): void {
-    this.data = this.data.concat(data);
+    this.data.push(data);
   }
 
   clearData(): void {
@@ -84,7 +48,7 @@ export class RendererAttributeStructure<T extends AttributeStructureInfo> {
   buildBuffer(): Float32Array {
     const buffer: number[] = [];
     let k = 0;
-    this.data.forEach((v: AttributeStructureData<T>): void=>{
+    this.data.forEach(arr => arr.forEach((v: AttributeStructureData<T>): void=>{
       for(const key in v) {
         if(v[key].length !== (this.attributes.get(key) as RendererAttribute).size) {
           const info = `Wrong size of attribute locate ${key}`;
@@ -95,7 +59,7 @@ export class RendererAttributeStructure<T extends AttributeStructureInfo> {
           buffer[k++] = value;
         });
       }
-    });
+    }));
     return new Float32Array(buffer);
   }
 

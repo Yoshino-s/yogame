@@ -1,6 +1,6 @@
-import { logger, RendererError, } from "../Renderer";
+import { logger, RendererError, } from "../renderer/Renderer";
 
-export class RendererBuffer {
+export default class RendererBuffer {
   buffer: WebGLBuffer;
   gl: WebGLRenderingContext;
   target: number;

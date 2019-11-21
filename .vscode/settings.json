@@ -3,5 +3,8 @@
   "json.schemas": [{
     "fileMatch": ["*.yts.json"],
     "url": "./src/json-schema/tileset-schema.json"
+  },{
+    "fileMatch": ["*.ytx.json"],
+    "url": "./src/json-schema/texture-schema.json"
   }],
 }

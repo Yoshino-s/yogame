@@ -23,7 +23,7 @@ export interface Task {
 
 type TaskManagerEmitter = StrictEventEmitter<EventEmitter, TaskManagerEvents>;
 
-class TaskManager extends (EventEmitter as { new(): TaskManagerEmitter }) {
+export default class TaskManager extends (EventEmitter as { new(): TaskManagerEmitter }) {
   queue: PriorityQueue<Task>;
   map: Map<string, Task>;
   abandon: Set<Task>;
@@ -111,5 +111,3 @@ class TaskManager extends (EventEmitter as { new(): TaskManagerEmitter }) {
     }
   }
 }
-
-export default TaskManager;

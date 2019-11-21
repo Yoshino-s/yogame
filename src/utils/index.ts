@@ -2,10 +2,25 @@ import Store from "./Store";
 import AJSON from "./AJSON";
 import Logger from "./logger";
 import Dictionary from "./algorithm/Dictionary";
+import { Rect, } from "../math/coordinate/baseInterface";
 
 export type Tuple<TItem, TLength extends number> = [TItem, ...TItem[]] & { length: TLength };
 
+export type RectGetter = () => Rect;
+
 const noop = (): void => { };
+
+function extname(str: string, cnt = 1): string {
+  const arr = str.split(".");
+  if(arr.length === 1) return "";
+  if (arr.length < cnt) return str;
+  if(cnt <= 1) return arr[arr.length - 1];
+  return arr.splice(arr.length - cnt, cnt).join(".");
+}
+
+function resolveUrl(str: string): URL {
+  return new URL(str, location.href);
+}
 
 function top<T>(timeout: number): Promise<T> {
   return new Promise((_res, rej): void => {
@@ -57,4 +72,4 @@ function splitColor(c: string): [number, number, number, number] {
   return [ parseInt(c.slice(1, 3), 16) / 255, parseInt(c.slice(3, 5), 16) / 255, parseInt(c.slice(5, 7), 16) / 255, 1.0, ];
 }
 
-export { splitColor, noop, Logger, AJSON, Store, PromiseTimeout, UID, isSupportWebGL, setCurrentWebGLContext, getCurrentWebGLContext, };
+export { splitColor, noop, extname, resolveUrl, Logger, AJSON, Store, PromiseTimeout, UID, isSupportWebGL, setCurrentWebGLContext, getCurrentWebGLContext, };

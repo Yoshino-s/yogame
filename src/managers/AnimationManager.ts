@@ -4,7 +4,7 @@ const emptyRender = function (time: number): void {
   time + 0;
 };
 
-export class AnimationManager {
+export default class AnimationManager {
   fps = 0;
   deltaTime = 0;
   rafId = 0;
@@ -36,5 +36,3 @@ export class AnimationManager {
     }
   }
 }
-
-export default AnimationManager;

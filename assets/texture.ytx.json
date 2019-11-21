@@ -1,0 +1,28 @@
+{
+  "type": "yogame-texture",
+  "version": "v1.0.0",
+  "metadata": {
+    "id": "test",
+    "cell": 16,
+    "img": "/favicon.jpg"
+  },
+  "texture": [
+    {
+      "id": "t0",
+      "x": 0,
+      "y": 0
+    },{
+      "id": "t1",
+      "x": 0,
+      "y": 16
+    },{
+      "id": "t2",
+      "x": 16,
+      "y": 0
+    },{
+      "id": "t3",
+      "x": 16,
+      "y": 16
+    }
+  ]
+}

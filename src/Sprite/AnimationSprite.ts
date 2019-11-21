@@ -1,11 +1,11 @@
-import DisplayObject, { logger, } from "./DisplayObject";
+import Sprite, { logger, } from "./Sprite";
 import { Rect, } from "../math/coordinate/baseInterface";
-import { RendererTexture, } from "../renderer/WebGL/RendererTexture";
-import Application from "../core/Application";
+import RendererTexture from "../webgl/RendererTexture";
+import RendererManager from "../renderer/RendererManager";
 
 const fixNum = (l: number, n: number): number => n >= 0 ? n : (l + n);
 
-export default class AnimationDisplayObject extends DisplayObject {
+export default class AnimationSprite extends Sprite {
   private _texture0!: RendererTexture;
   textures: RendererTexture[] = [];
   animation = true;
@@ -13,9 +13,8 @@ export default class AnimationDisplayObject extends DisplayObject {
   animationLoop = true;
   animationIndex = 0;
   private _animationLoopRange: [number, number] = [ 0, -1, ];
-  constructor(app: Application, textures: ({ id: string; rect?: Rect } | RendererTexture | string)[], rects?: Rect[]) {
-    super(app, textures[0], rects && rects[0]);
-    const gl = app.spriteRenderer.gl;
+  constructor(rendererManager: RendererManager, textures: ({ id: string; rect?: Rect } | RendererTexture | string)[], rects?: Rect[]) {
+    super(rendererManager, textures[0], rects && rects[0]);
     if (rects && textures.length !== rects.length) {
       const info = "Not the same length of textures&rects.";
       logger.error(info);
@@ -23,8 +22,8 @@ export default class AnimationDisplayObject extends DisplayObject {
     }
     textures.forEach((v: { id: string; rect?: Rect } | RendererTexture | string, i: number) => {
       if (v instanceof RendererTexture) this.textures[i] = v;
-      else if (typeof v === "string") this.textures[i] = new RendererTexture(gl, v, rects && rects[i]);
-      else this.textures[i] = new RendererTexture(gl, v.id, v.rect);
+      else if (typeof v === "string") this.textures[i] = new RendererTexture(this.gl, v, rects && rects[i]);
+      else this.textures[i] = new RendererTexture(this.gl, v.id, v.rect);
     });
   }
   get texture(): RendererTexture {
@@ -46,7 +45,7 @@ export default class AnimationDisplayObject extends DisplayObject {
     }
   }
   get animationLoopLength(): number {
-    return fixNum(this.textures.length, this._animationLoopRange[1]) - fixNum(this.textures.length, this._animationLoopRange[0]);
+    return fixNum(this.textures.length, this._animationLoopRange[1]) - fixNum(this.textures.length, this._animationLoopRange[0]) + 1;
   }
   switchTexture(index: number, relative?: boolean): void {
     if (!this.animation) return;

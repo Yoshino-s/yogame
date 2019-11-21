@@ -24,6 +24,6 @@ declare module "*.json" {
 }
 
 declare module "*.schema.js" {
-  const validate: (obj: any) => number;
-  export default validate;
+  const root: { root: (obj: any) => number };
+  export default root;
 }

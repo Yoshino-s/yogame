@@ -9,6 +9,6 @@ export interface Rect {
   bottom: number;
   left: number;
   right: number;
-  width: number;
-  height: number;
+  width?: number;
+  height?: number;
 }

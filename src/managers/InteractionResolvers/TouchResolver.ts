@@ -32,7 +32,7 @@ export interface TouchResolverOptions { forceUpdate: boolean; advanced: boolean 
 
 type TouchEmitter = StrictEventEmitter<EventEmitter, TouchEvents>;
 
-export class TouchResolver extends (EventEmitter as { new(): TouchEmitter }) {
+export default class TouchResolver extends (EventEmitter as { new(): TouchEmitter }) {
   status: TouchInfo = {
     alt: false,
     ctrl: false,

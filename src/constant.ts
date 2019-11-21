@@ -6,8 +6,8 @@ const constant = {
   },
   Manager: {
     ResourceManager: {
-      ImageExtensionName: [ ".png", ".jpg", ],
-      RawExtensionName: [ ".txt", "", ],
+      ImageExtensionName: [ "png", "jpg", ],
+      RawExtensionName: [ "txt", "", ],
     },
   },
   Layer: {

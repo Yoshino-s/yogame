@@ -12,15 +12,15 @@ export interface ResolvedResource {
 }
 
 export enum ResourceType {
-  image, json, raw
+  image, json, raw, tileset, texture
 }
 
-export abstract class Resolver{
+export default abstract class Resolver{
   option: ResolverOption;
   constructor(option?: ResolverOption){
     this.option = option || { basePath: "/", noCache: false, };
   }
-  abstract shouldUse(url: string, type?: ResourceType): boolean;
+  abstract shouldUse(url: string, type?: ResourceType): number;
   abstract async load(url: string, id: string, option?: ResolverOption): Promise<ResolvedResource>;
 }
 

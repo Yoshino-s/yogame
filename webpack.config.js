@@ -4,6 +4,7 @@ const webpack = require("webpack");
 const CleanWebpackPlugin = require("clean-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
+const CopyPlugin = require("copy-webpack-plugin");
 
 module.exports = {
   mode: "development",
@@ -61,5 +62,8 @@ module.exports = {
     new webpack.SourceMapDevToolPlugin({
       filename: "[name].js.map",
     }),
+    new CopyPlugin([
+      { from: "public", to: "./", },
+    ]),
   ],
 };

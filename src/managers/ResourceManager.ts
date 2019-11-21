@@ -1,6 +1,6 @@
 import { EventEmitter, } from "events";
 import StrictEventEmitter from "strict-event-emitter-types";
-import { Resolver, ResolvedResource, } from "./ResourcesResolvers/Resolver";
+import Resolver, { ResolvedResource, ResourceType, } from "./ResourcesResolvers/Resolver";
 import ResourceCache from "./ResourcesResolvers/ResourceCache";
 import { UID, } from "../utils/index";
 
@@ -18,15 +18,21 @@ export default class ResourceManager extends (EventEmitter as { new(): ResourceM
     super();
     this.resolvers = [];
   }
-  async load(url: string, id: string = UID("__inside_resources")): Promise<ResolvedResource> {
+  async load(url: string, id: string = UID("__inside_resources"), type?: ResourceType): Promise<ResolvedResource> {
     if(id && this.cache.has(id)) return Promise.resolve(this.cache.get(id) as ResolvedResource);
     this.emit("load", url, id);
-    const resolver = this.which(url);
+    const resolver = this.which(url, type);
     if(!resolver) return Promise.reject(`Unresolved resource.Path:${url}.ID=${id}`);
     return resolver.load(url, id);
   }
-  which(url: string): Resolver | null {
-    return this.resolvers.find((resolver)=>resolver.shouldUse(url)) || this.defaultResolver || null;
+  which(url: string, type?: ResourceType): Resolver | null {
+    let index = -1;
+    this.resolvers.reduce((perviousPriority: number, resolver: Resolver, i: number): number => {
+      const priority = resolver.shouldUse(url, type);
+      if (priority > perviousPriority) index = i;
+      return priority;
+    }, 0);
+    return index !== -1 ? this.resolvers[index] : (this.defaultResolver || null);
   } 
   use(resolver: Resolver, default_?: boolean): void {
     this.resolvers.push(resolver);

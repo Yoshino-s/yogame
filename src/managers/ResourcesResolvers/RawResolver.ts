@@ -1,22 +1,20 @@
-import { extname, } from "path";
-import { resolve, } from "url";
-import { Resolver, ResolverOption, ResolvedResource, logger, ResourceType, } from "./Resolver";
+import Resolver, { ResolverOption, ResolvedResource, logger, ResourceType, } from "./Resolver";
 import ResourceCache from "./ResourceCache";
 import constant from "../../constant";
+import { extname, resolveUrl, } from "../../utils/index";
 
 export interface RawResolvedResource extends ResolvedResource{
   content: ArrayBuffer;
-  id: string;
 }
 
-export class RawResolver extends Resolver {
+export default class RawResolver extends Resolver {
   constructor(option?: ResolverOption) {
     super(option);
   }
-  shouldUse(url: string, type?: ResourceType): boolean {
-    if(type === ResourceType.raw) return true;
-    if(constant.Manager.ResourceManager.RawExtensionName.indexOf(extname(new URL(resolve(window.location.href, url)).pathname)) !== -1) return true;
-    return false;
+  shouldUse(url: string, type?: ResourceType): number {
+    if(type === ResourceType.raw) return 10;
+    if(constant.Manager.ResourceManager.RawExtensionName.indexOf(extname(resolveUrl(url).pathname)) !== -1) return 1;
+    return 0;
   }
   async load(path: string, id: string, option?: ResolverOption): Promise<RawResolvedResource> {
     return fetch(path, (option || this.option).fetchOption).then((res: Response) => {

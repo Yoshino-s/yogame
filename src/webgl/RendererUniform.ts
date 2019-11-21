@@ -1,8 +1,8 @@
-import { logger, RendererError, } from "../Renderer";
+import { logger, RendererError, } from "../renderer/Renderer";
 import { setUniform, } from "./utils";
-import { RendererProgram, } from "./RendererProgram";
+import RendererProgram from "./RendererProgram";
 
-export class RendererUniform {
+export default class RendererUniform {
   glProgram: RendererProgram;
   name: string;
   location: WebGLUniformLocation;

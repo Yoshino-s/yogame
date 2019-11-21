@@ -1,16 +1,17 @@
 /* eslint-disable @typescript-eslint/camelcase */
-import { WebGLRenderer, } from "../renderer/WebGL/WebGLRenderer";
 import VertexSource from "./complex.vert";
 import FragmentSource from "./complex.frag";
-import { RendererAttributeStructure, } from "../renderer/WebGL/RendererAttribute";
-import { WebGLConstants, } from "../renderer/WebGL/WebGLConstants";
+import RendererAttributeStructure from "../webgl/RendererAttributeStructure";
+import WebGLConstants from "../webgl/WebGLConstants";
 import { transformFromDefault, CoordinateType, } from "../math/coordinate/coordTransform";
-import { TextureCache, } from "../renderer/WebGL/RendererTexture";
-import { RendererUniform, } from "../renderer/WebGL/RendererUniform";
+import { BaseTextureCache, } from "../webgl/RendererTexture";
+import RendererUniform from "../webgl/RendererUniform";
 import constant from "../constant";
-import { RendererBuffer, } from "../renderer/WebGL/RendererBuffer";
-import DisplayObject from "./DisplayObject";
-import AnimationDisplayObject from "./AnimationDisplayObject";
+import RendererBuffer from "../webgl/RendererBuffer";
+import AnimationSprite from "../Sprite/AnimationSprite";
+import DisplayObject from "../core/DisplayObject";
+import Renderer from "./Renderer";
+
 
 const SpriteRendererAttributeInfo = {
   a_Position: {
@@ -35,11 +36,11 @@ const SpriteRendererAttributeInfo = {
   },
 };
 
-export class SpriteRenderer extends WebGLRenderer {
-  private root?: DisplayObject;
+export default class DisplayObjectRenderer extends Renderer {
   private arrayBuffer: RendererBuffer;
   private elementBuffer: RendererBuffer;
   private elementArray: number[] = [];
+  private elementIndex = 0;
   private index = 0;
   attributeStructure: RendererAttributeStructure<typeof SpriteRendererAttributeInfo>;
   private textures: [string, number][] = [];
@@ -47,8 +48,9 @@ export class SpriteRenderer extends WebGLRenderer {
   private viewportUniform: RendererUniform;
   deltaTime = 0;
   time = 0;
+  canvas: any;
   constructor(canvas: HTMLCanvasElement) {
-    super(canvas, VertexSource, FragmentSource.replace(/%count%/g, `${constant.DefaultValues.MAX_TEXTURE_NUMBER}`));
+    super(canvas, VertexSource, FragmentSource);
     this.attributeStructure = new RendererAttributeStructure(this.program, SpriteRendererAttributeInfo);
     this.program.use();
     this.viewportUniform = new RendererUniform(this.program, "u_Viewsight", this.gl.FLOAT_MAT4);
@@ -65,22 +67,19 @@ export class SpriteRenderer extends WebGLRenderer {
     this.elementBuffer = new RendererBuffer(this.gl, this.gl.ELEMENT_ARRAY_BUFFER, this.gl.STATIC_DRAW);
   }
 
-  setRoot(root: DisplayObject): void {
-    this.root = root;
+  startRender(deltaTime: number, time: number): void {
+    this.deltaTime = deltaTime;
+    this.time = time;
   }
 
-  render(deltaTime: number): void {
-    this.deltaTime = deltaTime;
-    this.time = performance.now();
-    if (!this.root) return;
-    this.program.use();
-    this.addRenderData(this.root);
+  flushRender(): void {
     if (this.textures.length) this._render();
   }
 
-  _render(): void {
+  private _render(): void {
+    this.program.use();
     this.textures.forEach((v, i) => {
-      const t = TextureCache.get(v[0]);
+      const t = BaseTextureCache.get(v[0]);
       if (!t) return;
       t.bindTexture(WebGLConstants.TEXTURE0 + i);
       this.textureUniform[i].setData([ i, ]);
@@ -89,7 +88,11 @@ export class SpriteRenderer extends WebGLRenderer {
     this.attributeStructure.render(buffer, this.arrayBuffer);
     this.elementBuffer.bufferData(new Uint16Array(this.elementArray));
     this.gl.drawElements(WebGLConstants.TRIANGLE_STRIP, this.elementArray.length, WebGLConstants.UNSIGNED_SHORT, 0);
-    this.clearRenderData();
+    
+    this.textures = [];
+    this.attributeStructure.clearData();
+    this.index = 0;
+    this.elementArray = [];
   }
 
   addRenderData(root: DisplayObject): void {
@@ -98,13 +101,15 @@ export class SpriteRenderer extends WebGLRenderer {
       this._render();
     }
     
-    if (!root.hide) {
+    if (!root.hide && root.texture.baseTexture.id !== "empty") {
       const width = this.canvas.width;
       const height = this.canvas.height;
       
       const z = root.z;
-      const { x: x0, y: y0, } = transformFromDefault({ x: root.left / width, y:  root.top / height, }, CoordinateType.WebGL);
-      const { x: x1, y: y1, } = transformFromDefault({ x: root.right / width, y: root.bottom / height, }, CoordinateType.WebGL);
+      const s = 2 / width;
+      const s0 = 2 / height;
+      const x0 = s * root.left - 1, y0 = 1 - s0 * root.top;
+      const x1 = s * root.right - 1, y1 = 1 - s0 * root.bottom;
 
       let tx0, tx1, ty0, ty1;
       if (root.texture.rect) {
@@ -122,7 +127,7 @@ export class SpriteRenderer extends WebGLRenderer {
         ty1 = 0.0;
       }
 
-      if (root instanceof AnimationDisplayObject && root.animation) {
+      if (root instanceof AnimationSprite && root.animation) {
         const interval = root.animationInterval;
         if (interval <= 0) root.nextTexture();
         else {
@@ -130,9 +135,9 @@ export class SpriteRenderer extends WebGLRenderer {
         }
       }
       
-      let i = this.textures.findIndex((v => v[0] === root.texture.id));
+      let i = this.textures.findIndex((v => v[0] === root.texture.baseTexture.id));
       if (i === -1) {
-        this.textures.push([ root.texture.id, 1, ]);
+        this.textures.push([ root.texture.baseTexture.id, 1, ]);
         i = this.textures.length - 1;
       } else {
         this.textures[i][1]++;
@@ -163,16 +168,19 @@ export class SpriteRenderer extends WebGLRenderer {
         a_ColorOffset: root.filter.offset,
       });
       const index = this.index;
-      this.elementArray = this.elementArray.concat([ index, index, index + 1, index + 2, index + 3, index + 3, ]);
+      const elementIndex = this.elementIndex;
+      this.elementArray[elementIndex] = index;
+      this.elementArray[elementIndex + 1] = index;
+      this.elementArray[elementIndex + 2] = index + 1;
+      this.elementArray[elementIndex + 3] = index + 2;
+      this.elementArray[elementIndex + 4] = index + 3;
+      this.elementArray[elementIndex + 5] = index + 3;
       this.index += 4;
+      this.elementIndex += 6;
     }
-    root.children.forEach(c => this.addRenderData(c));
   }
-
-  clearRenderData(): void {
-    this.textures = [];
-    this.attributeStructure.clearData();
-    this.index = 0;
-    this.elementArray = [];
+  destroy(): void {
+    delete this.gl;
+    this.program.destroy();
   }
 }

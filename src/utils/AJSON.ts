@@ -13,7 +13,7 @@ function stringify(raw: any): string {
 function parse(raw: string): any {
   return JSON.parse(raw, function(key: string, val: any) {
     let o = val;
-    if(Array.isArray) {
+    if(Array.isArray(val)) {
       switch(val[0]) {
         case "__Set":
           o.shift();

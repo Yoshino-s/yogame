@@ -1,6 +1,6 @@
-import { logger, RendererError, } from "../Renderer";
+import { logger, RendererError, } from "../renderer/Renderer";
 
-export class RendererProgram {
+export default class RendererProgram {
   vertSource: string;
   fragSource: string;
   gl: WebGLRenderingContext;

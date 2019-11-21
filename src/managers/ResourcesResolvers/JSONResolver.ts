@@ -1,21 +1,19 @@
-import { extname, } from "path";
-import { resolve, } from "url";
-import { Resolver, ResolverOption, ResolvedResource, logger, ResourceType, } from "./Resolver";
+import Resolver, { ResolverOption, ResolvedResource, logger, ResourceType, } from "./Resolver";
 import ResourceCache from "./ResourceCache";
+import { extname, resolveUrl, } from "../../utils/index";
 
 export interface JSONResolvedResource extends ResolvedResource{
   content: any;
-  id: string;
 }
 
-export class JSONResolver extends Resolver {
+export default class JSONResolver extends Resolver {
   constructor(option?: ResolverOption) {
     super(option);
   }
-  shouldUse(url: string, type?: ResourceType): boolean {
-    if(type === ResourceType.json) return true;
-    if(extname(new URL(resolve(window.location.href, url)).pathname) === ".json") return true;
-    return false;
+  shouldUse(url: string, type?: ResourceType): number {
+    if(type === ResourceType.json) return 10;
+    if(extname(resolveUrl(url).pathname) === "json") return 1;
+    return 0;
   }
   async load(path: string, id: string, option?: ResolverOption): Promise<JSONResolvedResource> {
     return fetch(path, (option || this.option).fetchOption).then((res: Response) => {

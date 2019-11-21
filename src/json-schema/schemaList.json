@@ -1,7 +1,10 @@
 [
   {
-    "tsSource": "./tileset-schema.ts",
-    "output": "./tileset-schema.schema.js",
-    "typeName": "Tileset"
+    "name": "tileset-schema",
+    "typeName": "TilesetInterface"
+  },
+  {
+    "name": "texture-schema",
+    "typeName": "TextureInterface"
   }
 ]

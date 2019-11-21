@@ -1,0 +1,76 @@
+{
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": [
+        "yogame-tileset"
+      ]
+    },
+    "version": {
+      "type": "string"
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "texture": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "texture"
+      ]
+    },
+    "tileset": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "data": {
+            "type": "string"
+          },
+          "texture": {
+            "type": "string"
+          },
+          "type": {
+            "enum": [
+              "cell",
+              "decorate",
+              "floor",
+              "object",
+              "wall"
+            ],
+            "type": "string"
+          },
+          "collide": {
+            "enum": [
+              "fill",
+              "none"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "collide",
+          "id",
+          "texture",
+          "type"
+        ]
+      }
+    }
+  },
+  "required": [
+    "metadata",
+    "tileset",
+    "type",
+    "version"
+  ],
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

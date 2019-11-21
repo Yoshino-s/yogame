@@ -1,16 +1,15 @@
-export interface Tileset {
+export interface TilesetInterface {
   type: "yogame-tileset";
   version: string;
   metadata: {
-    cell: number;
+    id: string;
+    texture: string; //The *.ytx.json file
   };
   tileset: {
     id: string;
-    x: number;
-    y: number;
-    data: {
-      type: "wall" | "cell" | "floor" | "decorate" | "object";
-      collide: "none"|"fill";
-    };
-  };
+    data?: string;
+    texture: string;
+    type: "wall" | "cell" | "floor" | "decorate" | "object";
+    collide: "none"|"fill";
+  }[];
 }

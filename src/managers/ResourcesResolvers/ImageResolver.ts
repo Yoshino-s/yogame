@@ -1,24 +1,22 @@
-import { extname, } from "path";
-import { resolve, } from "url";
-import { Resolver, ResolverOption, ResolvedResource, logger, ResourceType, } from "./Resolver";
+import Resolver, { ResolverOption, ResolvedResource, logger, ResourceType, } from "./Resolver";
 import ResourceCache from "./ResourceCache";
 import constant from "../../constant";
-import { ImageCache, } from "../../renderer/WebGL/RendererTexture";
+import { ImageCache, } from "../../webgl/RendererTexture";
+import { extname, resolveUrl, } from "../../utils/index";
 
 export interface ImageResolvedResource extends ResolvedResource{
   content: HTMLImageElement;
-  id: string;
 }
 
-export class ImageResolver extends Resolver {
+export default class ImageResolver extends Resolver {
   constructor(option?: ResolverOption) {
     super(option);
     this.load("data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==", "empty");
   }
-  shouldUse(url: string, type?: ResourceType): boolean {
-    if(type === ResourceType.image) return true;
-    if(constant.Manager.ResourceManager.ImageExtensionName.indexOf(extname(new URL(resolve(window.location.href, url)).pathname)) !== -1) return true;
-    return false;
+  shouldUse(url: string, type?: ResourceType): number {
+    if(type === ResourceType.image) return 10;
+    if(constant.Manager.ResourceManager.ImageExtensionName.indexOf(extname(resolveUrl(url).pathname)) !== -1) return 1;
+    return 0;
   }
   async load(path: string, id: string, option?: ResolverOption): Promise<ImageResolvedResource> {
     const img = new Image();

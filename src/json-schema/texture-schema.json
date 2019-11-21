@@ -1,0 +1,68 @@
+{
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": [
+        "yogame-texture"
+      ]
+    },
+    "version": {
+      "type": "string"
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "cell": {
+          "type": "number"
+        },
+        "img": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "cell",
+        "id",
+        "img"
+      ]
+    },
+    "texture": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "x": {
+            "type": "number"
+          },
+          "y": {
+            "type": "number"
+          },
+          "width": {
+            "type": "number"
+          },
+          "height": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "x",
+          "y"
+        ]
+      }
+    }
+  },
+  "required": [
+    "metadata",
+    "texture",
+    "type",
+    "version"
+  ],
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

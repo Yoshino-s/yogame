@@ -15,7 +15,9 @@ const compilerOptions = {
 // optionally pass a base path
 const basePath = "./src/json-schema";
 JSL.forEach(function (v) {
-  const program = TJS.getProgramFromFiles([ path.resolve(basePath, v.tsSource), ], compilerOptions, basePath);
+  const name = v.name;
+  const program = TJS.getProgramFromFiles([ path.resolve(basePath, `${name}.ts`), ], compilerOptions, basePath);
   const schema = TJS.generateSchema(program, v.typeName, settings);
-  fs.writeFileSync(path.resolve(basePath, v.output), "/* eslint-disable */export default "+terser.minify(generate.default(schema),{compress:false}).code);
+  fs.writeFileSync(path.resolve(basePath, `${name}.json`), JSON.stringify(schema, undefined, 2));
+  fs.writeFileSync(path.resolve(basePath, `${name}.schema.js`), "/* eslint-disable */export default "+terser.minify(generate.default(schema),{compress:false}).code);
 });
