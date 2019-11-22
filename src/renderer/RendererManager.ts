@@ -1,6 +1,7 @@
 import Renderer, { logger, } from "./Renderer";
 import DisplayObject from "../core/DisplayObject";
 import DisplayObjectRenderer from "./DisplayObjectRenderer";
+import Viewsight from "../viewport/Viewsight";
 
 
 export default class RendererManager {
@@ -9,9 +10,11 @@ export default class RendererManager {
   root?: DisplayObject;
   time = performance.now();
   canvas: HTMLCanvasElement;
+  viewsight: Viewsight;
   deltaTime = 0;
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
+    this.viewsight = new Viewsight(this.canvas.width, this.canvas.height);
     this.defaultRenderer = new DisplayObjectRenderer(canvas);
     this.renderers.set("default", this.defaultRenderer);
   }
@@ -25,6 +28,7 @@ export default class RendererManager {
     this.renderers.forEach((renderer: Renderer) => {
       renderer.gl.viewport(0, 0, width, height);
     });
+    this.viewsight.resize(width, height);
   }
   render(deltaTime: number): void {
     this.deltaTime = deltaTime;
@@ -35,7 +39,7 @@ export default class RendererManager {
       return;
     }
     this.renderers.forEach((renderer: Renderer) => {
-      renderer.startRender(deltaTime, this.time);
+      renderer.startRender(deltaTime, this.time, this.viewsight);
     });
     this._render(this.root);
     this.renderers.forEach((renderer: Renderer) => {

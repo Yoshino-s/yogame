@@ -100,6 +100,7 @@ class Application extends (EventEmitter as {new(): ApplicationEmitter}){
     this.RendererManager.resize(width, height);
   }
   fullscreen(): void {
+    document.body.requestFullscreen();
     this.resize(document.body.clientWidth, document.body.clientHeight);
   }
   get rect(): ClientRect | DOMRect {

@@ -5,8 +5,8 @@ import DisplayObject from "./DisplayObject";
 import InteractionManager from "../managers/InteractionManager";
 import { RectGetter, } from "../utils/index";
 
-function contains(rect: Rect, p: Point, orect: { left: number; top: number } = { top: 0, left: 0, }): boolean {
-  return rect.left < p.x - orect.left && p.x - orect.left < rect.right && rect.top < p.y - orect.top && p.y - orect.top < rect.bottom;
+function contains(rect: Rect, p: Point): boolean {
+  return rect.left < p.x && p.x < rect.right && rect.top < p.y && p.y < rect.bottom;
 }
 
 export default class SpriteInteraction {
@@ -30,21 +30,22 @@ export default class SpriteInteraction {
     const inObject = this.inObject;
     const isPressed = this.isPressed.has(id);
     const rect = this.rectGetter();
+    p = { x: p.x - rect.left, y: p.y - rect.top, };
     pd();
     function check(root: DisplayObject): void {
-      const v = contains(root, p, rect);
+      const v = contains(root, p);
       const uid = root.uid;
       const v1 = inObject.has(uid);
       if (root.interaction) {
         if (v) {
           if (!v1) {
-            root.emit("moveIn");
+            root.emit("moveIn", p.x, p.y);
           }
-          if(isPressed) root.emit("moveOn");
-          root.emit("move");
+          if(isPressed) root.emit("moveOn", p.x, p.y);
+          root.emit("move", p.x, p.y);
         } else {
           if (v1) {
-            root.emit("moveOut");
+            root.emit("moveOut", p.x, p.y);
           }
         }
         v ? inObject.add(uid) : inObject.delete(uid);
@@ -56,15 +57,16 @@ export default class SpriteInteraction {
   down = (p: Point, id: number, pd: () => void): void => {
     this.isPressed.add(id);
     const rect = this.rectGetter();
+    p = { x: p.x - rect.left, y: p.y - rect.top, };
     const pressInObject = this.pressInObject;
     pd();
     if (!contains(rect, p)) return;
     function check(root: DisplayObject): void {
-      const v = contains(root, p, rect);
+      const v = contains(root, p);
       const uid = root.uid;
       if (root.interaction) {
         if (v) {
-          root.emit("down");
+          root.emit("down", p.x, p.y);
           const res = pressInObject.get(uid);
           if (res) {
             res.push(id);
@@ -80,16 +82,17 @@ export default class SpriteInteraction {
   up = (p: Point, id: number, pd: () => void): void => {
     this.isPressed.delete(id);
     const rect = this.rectGetter();
+    p = { x: p.x - rect.left, y: p.y - rect.top, };
     const pressInObject = this.pressInObject;
     pd();
     function check(root: DisplayObject): void {
-      const v = contains(root, p, rect);
+      const v = contains(root, p);
       const res = pressInObject.get(root.uid);
       if (root.interaction && res && res.indexOf(id) !== -1) {
         if (v) {
-          root.emit("up");
+          root.emit("up", p.x, p.y);
         } else {
-          root.emit("upOut");
+          root.emit("upOut", p.x, p.y);
         }
         pressInObject.set(root.uid, res.filter(v => v !== id));
       }

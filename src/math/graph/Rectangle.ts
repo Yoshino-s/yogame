@@ -22,10 +22,10 @@ export default class Rectangle implements Graph {
     return this.y;
   }
   get right(): number {
-    return this.x + this.height;
+    return this.x + this.width;
   }
   get bottom(): number {
-    return this.y + this.width;
+    return this.y + this.height;
   }
   static EMPTY(): Rectangle {
     return new Rectangle(0, 0, 0, 0);

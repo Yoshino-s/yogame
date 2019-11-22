@@ -12,13 +12,13 @@ import RendererManager from "../renderer/RendererManager";
 export const logger = new Logger("DisplayObject");
 
 type DisplayObjectEvents = {
-  moveIn: () => void;
-  moveOut: () => void;
-  down: () => void;
-  up: () => void;
-  upOut: () => void;
-  move: () => void;
-  moveOn: () => void;
+  moveIn: (x: number, y: number) => void;
+  moveOut: (x: number, y: number) => void;
+  down: (x: number, y: number) => void;
+  up: (x: number, y: number) => void;
+  upOut: (x: number, y: number) => void;
+  move: (x: number, y: number) => void;
+  moveOn: (x: number, y: number) => void;
 }
 
 type DisplayObjectEmitter = StrictEventEmitter<EventEmitter, DisplayObjectEvents>;
@@ -119,6 +119,12 @@ export default class DisplayObject extends (EventEmitter as { new(): DisplayObje
   }
   get bottom(): number {
     return this.top + this.height * this.scale;
+  }
+  get centerPos(): Point {
+    return {
+      x: this.left + this.width * this.scale / 2,
+      y: this.top + this.height * this.scale / 2,
+    };
   }
   set opacity(o: number) {
     this.filter.setOpacity(o);

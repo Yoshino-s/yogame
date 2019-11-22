@@ -2,6 +2,7 @@ import { Logger, } from "../utils/index";
 import DisplayObject from "../core/DisplayObject";
 import RendererProgram from "../webgl/RendererProgram";
 import constant from "../constant";
+import Viewsight from "../viewport/Viewsight";
 
 export const logger = new Logger("Renderer");
 
@@ -25,7 +26,7 @@ export default abstract class Renderer {
 
     this.program = new RendererProgram(gl, vertex, fragment.replace(/%sampler_count%/g, `${constant.DefaultValues.MAX_TEXTURE_NUMBER}`));
   }
-  abstract startRender(deltaTime: number, time: number): void;
+  abstract startRender(deltaTime: number, time: number, viewsight: Viewsight): void;
   abstract addRenderData(object: DisplayObject): void;
   abstract flushRender(): void;
   abstract destroy(): void;

@@ -11,6 +11,7 @@ import RendererBuffer from "../webgl/RendererBuffer";
 import AnimationSprite from "../Sprite/AnimationSprite";
 import DisplayObject from "../core/DisplayObject";
 import Renderer from "./Renderer";
+import Viewsight from "../viewport/Viewsight";
 
 
 const SpriteRendererAttributeInfo = {
@@ -67,9 +68,10 @@ export default class DisplayObjectRenderer extends Renderer {
     this.elementBuffer = new RendererBuffer(this.gl, this.gl.ELEMENT_ARRAY_BUFFER, this.gl.STATIC_DRAW);
   }
 
-  startRender(deltaTime: number, time: number): void {
+  startRender(deltaTime: number, time: number, viewsight: Viewsight): void {
     this.deltaTime = deltaTime;
     this.time = time;
+    this.viewportUniform.setData(viewsight.data);
   }
 
   flushRender(): void {
@@ -110,7 +112,7 @@ export default class DisplayObjectRenderer extends Renderer {
       const s0 = 2 / height;
       const x0 = s * root.left - 1, y0 = 1 - s0 * root.top;
       const x1 = s * root.right - 1, y1 = 1 - s0 * root.bottom;
-
+      
       let tx0, tx1, ty0, ty1;
       if (root.texture.rect) {
         const tw = root.texture.width;
